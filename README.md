@@ -5,6 +5,9 @@ Hetzner cloud automation
 
 The later described for Ubuntu system.
 
+* terraform
+* az cli
+
 ### Install Terraform
 
 Check the latest installation procedures [here](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
@@ -31,3 +34,32 @@ terraform -help
 Copy tfvars.example file:
 
 `cp main.tfvars.example main.tfvars`
+
+### Install Azure CLI
+
+Check the latest installation procedures [here](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-linux)
+
+```
+curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+```
+
+### Login to Azure
+
+Simple login
+
+```
+az loing
+```
+
+if that didn't work, you might need 
+
+```
+az login --tenant <your tenant> --use-device-code
+```
+
+
+### Apply
+
+```
+terraform apply -var-file="main.tfvars"
+```

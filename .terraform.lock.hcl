@@ -1,22 +1,22 @@
 # This file is maintained automatically by "terraform init".
 # Manual edits may be lost in future updates.
 
-provider "registry.terraform.io/hashicorp/azurestack" {
-  version     = "0.9.0"
-  constraints = "0.9.0"
+provider "registry.terraform.io/hashicorp/azurerm" {
+  version     = "3.117.0"
+  constraints = "~> 3.0"
   hashes = [
-    "h1:OVBWaT33LHdv9Sd3SJp2HCibHXnD0ZmdVR6f/rKyS8E=",
-    "zh:129d3234b00f4e8477c4d924af11209af1cc43d6e53a528ad755b8395fdad12c",
-    "zh:297e74ea93c6008ffccf215e01c0b71197c868b461052fc35ba2100c9266777c",
-    "zh:86549c05a31aed8428a51b424b39c58e2a17960bcdaa3252468096ab2eec3aac",
-    "zh:9d620e37aa6be43b1395991206803e2a4fd97fedab482a3fa997b0beb8544a0e",
-    "zh:b40f4e2fba7fe7788b23f1412762d380ba0678065b725878efae6f69e20ab7bb",
-    "zh:b983b5f085fcecb3a234b245260d65e8a91a04a3496d779d706c6b9b0b472c4f",
-    "zh:bc13d45eb131138e7079a3d14baefb6ed1feed5fb76fa9cc28502319100a6dab",
-    "zh:be114c8854dfd464f88b307e645054655251026c3ead62b80adc7abdbfc51bc1",
-    "zh:bf0012c7b785de98f1f0e24dbe5e6a934aa85b75d27614c0aa4730cea75341ad",
-    "zh:cca5dabd1c4711d7ceff0a868ec7841024eca41cab692d9fbea11000bf93c0df",
-    "zh:eb2cf0ded1ae7bcd677b94d94344e5554001452d2c130b5740c269c4eb1a8ab5",
-    "zh:fa0b0d386c739f64fe015fd754d4bc0ac840b08ca2b7c64cd64a89668c635caa",
+    "h1:Ynfg+Iy7x6K8M6W1AhqXCe3wkoiqIQhROlca7C3KC3w=",
+    "zh:2e25f47492366821a786762369f0e0921cc9452d64bfd5075f6fdfcf1a9c6d70",
+    "zh:41eb34f2f7469bf3eb1019dfb0e7fc28256f809824016f4f8b9d691bf473b2ac",
+    "zh:48bb9c87b3d928da1abc1d3db75453c9725de4674c612daf3800160cc7145d30",
+    "zh:5d6b0de0bbd78943fcc65c53944ef4496329e247f434c6eab86ed051c5cea67b",
+    "zh:78c9f6fdb1206a89cf0e6706b4f46178169a93b6c964a4cad8a321058ccbd9b4",
+    "zh:793b702c352589d4360b580d4a1cf654a7439d2ad6bdb7bfea91de07bc4b0fac",
+    "zh:7ed687ff0a5509463a592f97431863574fe5cc80a34e395be06766215b8c6285",
+    "zh:955ba18789bd15592824eb426a8d0f38595bd09fffc6939c1c58933489c1a71e",
+    "zh:bf5949a55be0714cd9c8815d472eae4baa48ba06d0f6bf2b96775869acda8a54",
+    "zh:da5d31f635abd2c645ffc76d6176d73f646128e73720cc368247cc424975c127",
+    "zh:eed5a66d59883c9c56729b0a964a2b60d758ea7489ef3e920a6fbd48518ce5f5",
+    "zh:f569b65999264a9416862bca5cd2a6177d94ccb0424f3a4ef424428912b9cb3c",
   ]
 }
