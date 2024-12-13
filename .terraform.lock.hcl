@@ -1,24 +1,22 @@
 # This file is maintained automatically by "terraform init".
 # Manual edits may be lost in future updates.
 
-provider "registry.terraform.io/hetznercloud/hcloud" {
-  version     = "1.49.1"
-  constraints = "~> 1.45"
+provider "registry.terraform.io/hashicorp/azurestack" {
+  version     = "0.9.0"
+  constraints = "0.9.0"
   hashes = [
-    "h1:FKGRNHVbcfQJd8EWrb8Ze5QHkaGr8zI+ZKxBMjvOwPk=",
-    "zh:3d5f9773da4f8203cf625d04a5a0e4ff7e202684c010a801a945756140c61cde",
-    "zh:446305d492017cda91e5c15122ec16ff15bfe3ef4d3fd6bcea0cdf7742ab1b86",
-    "zh:44d4f9156ed8b4f0444bd4dc456825940be49048828565964a192286d28c9f20",
-    "zh:492ad893d2f89bb17c9beb877c8ceb4a16caf39db1a79030fefeada6c7aa217f",
-    "zh:68dc552c19ad9d209ec6018445df6e06fb77a637513a53cc66ddce1b024082be",
-    "zh:7492495ffda6f6c49ab38b539bd2eb965b1150a63fb6b191a27dec07d17601cb",
-    "zh:850fe92005981ea00db86c3e49ba5b49732fdf1f7bd5530a68f6e272847059fc",
-    "zh:8cb67f744c233acfb1d68a6c27686315439d944edf733b95f113b4aa63d86713",
-    "zh:8e13dac46e8c2497772ed1baee701b1d1c26bcc95a63b5c4566c83468f504868",
-    "zh:c44249c6a8ba931e208a334792686b5355ab2da465cadea03c1ea8e73c02db12",
-    "zh:d103125a28a85c89aea0cb0c534fe3f504416c4d4fc75c37364b9ec5f66dd77d",
-    "zh:ed8f64e826aa9bfca95b72892271678cb78411b40d7b404a52404141e05a4ab1",
-    "zh:f40efad816de00b279bd1e2cbf62c76b0e5b2da150a0764f259984b318e30945",
-    "zh:f5e912d0873bf4ecc43feba4ceccdf158048080c76d557e47f34749139fdd452",
+    "h1:OVBWaT33LHdv9Sd3SJp2HCibHXnD0ZmdVR6f/rKyS8E=",
+    "zh:129d3234b00f4e8477c4d924af11209af1cc43d6e53a528ad755b8395fdad12c",
+    "zh:297e74ea93c6008ffccf215e01c0b71197c868b461052fc35ba2100c9266777c",
+    "zh:86549c05a31aed8428a51b424b39c58e2a17960bcdaa3252468096ab2eec3aac",
+    "zh:9d620e37aa6be43b1395991206803e2a4fd97fedab482a3fa997b0beb8544a0e",
+    "zh:b40f4e2fba7fe7788b23f1412762d380ba0678065b725878efae6f69e20ab7bb",
+    "zh:b983b5f085fcecb3a234b245260d65e8a91a04a3496d779d706c6b9b0b472c4f",
+    "zh:bc13d45eb131138e7079a3d14baefb6ed1feed5fb76fa9cc28502319100a6dab",
+    "zh:be114c8854dfd464f88b307e645054655251026c3ead62b80adc7abdbfc51bc1",
+    "zh:bf0012c7b785de98f1f0e24dbe5e6a934aa85b75d27614c0aa4730cea75341ad",
+    "zh:cca5dabd1c4711d7ceff0a868ec7841024eca41cab692d9fbea11000bf93c0df",
+    "zh:eb2cf0ded1ae7bcd677b94d94344e5554001452d2c130b5740c269c4eb1a8ab5",
+    "zh:fa0b0d386c739f64fe015fd754d4bc0ac840b08ca2b7c64cd64a89668c635caa",
   ]
 }
