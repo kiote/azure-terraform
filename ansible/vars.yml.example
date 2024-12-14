@@ -3,3 +3,4 @@
 git_repo_url: "https://github.com/your-repo/your-project.git"
 app_name: "my-app"
 docker_image_name: "my-image"
+app_namespace: "my-namespace"

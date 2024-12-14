@@ -1,4 +1,13 @@
 ---
+- name: Create Kubernetes namespace file
+  copy:
+    dest: /home/adminuser/namespace.yml
+    content: |
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: {{ app_namespace }}
+
 - name: Create Kubernetes deployment file
   copy:
     dest: /home/adminuser/deployment.yml
@@ -7,6 +16,7 @@
       kind: Deployment
       metadata:
         name: {{ app_name }}
+        namespace: {{ app_namespace }}
       spec:
         replicas: 1
         selector:
@@ -31,6 +41,7 @@
       kind: Service
       metadata:
         name: {{ app_name }}
+        namespace: {{ app_namespace }}
       spec:
         selector:
           app: {{ app_name }}
