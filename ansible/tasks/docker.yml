@@ -1,0 +1,41 @@
+---
+- name: Install Docker
+  apt:
+    name: docker.io
+    state: present
+
+- name: Add user to docker group
+  user:
+    name: adminuser
+    groups: docker
+    append: yes
+
+- name: Start Docker service
+  service:
+    name: docker
+    state: started
+
+- name: Remove existing Docker image
+  shell: docker rmi -f {{ docker_image_name }}:latest
+  ignore_errors: yes
+
+- name: Build Docker image
+  shell: docker build -t {{ docker_image_name }}:latest /home/adminuser/apps/{{ app_name }}
+  args:
+    chdir: /home/adminuser/apps/{{ app_name }}
+  become: yes
+  become_user: adminuser
+  register: build_output
+  failed_when: build_output.rc != 0
+
+- name: Display build output
+  debug:
+    var: build_output.stdout_lines
+
+- name: List Docker images
+  shell: docker images
+  register: docker_images_output
+
+- name: Display Docker images
+  debug:
+    var: docker_images_output.stdout_lines

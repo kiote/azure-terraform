@@ -1,0 +1,14 @@
+---
+- name: install git
+  apt:
+    name: git
+    state: present
+
+- name: Clone git repo
+  git:
+    repo: "{{ git_repo_url }}"
+    dest: /home/adminuser/apps/{{ app_name }}
+    version: HEAD
+    force: yes
+  become: yes
+  become_user: adminuser
