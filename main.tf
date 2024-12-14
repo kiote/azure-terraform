@@ -107,14 +107,54 @@ resource "azurerm_virtual_machine" "longlegs" {
 
   os_profile {
     computer_name  = "longlegs-vm"
-    admin_username = "{{ ansible_user }}"
+    admin_username = "${var.ansible_user}"
   }
 
   os_profile_linux_config {
     disable_password_authentication = true
     ssh_keys {
-      path     = "/home/{{ ansible_user }}/.ssh/authorized_keys"
+      path     = "/home/${var.ansible_user}/.ssh/authorized_keys"
       key_data = file("~/.ssh/id_ed25519.pub")
     }
   }
+}
+
+resource "azurerm_key_vault" "longlegs" {
+  name                        = "longlegs-keyvault"
+  location                    = azurerm_resource_group.longlegs.location
+  resource_group_name         = azurerm_resource_group.longlegs.name
+  tenant_id                   = data.azurerm_client_config.current.tenant_id
+  sku_name                    = "standard"
+
+  purge_protection_enabled    = true
+
+  tags = var.common_tags
+}
+
+resource "azurerm_key_vault_access_policy" "longlegs" {
+  key_vault_id = azurerm_key_vault.longlegs.id
+  tenant_id    = data.azurerm_client_config.current.tenant_id
+  object_id    = data.azurerm_client_config.current.object_id
+
+  secret_permissions = [
+    "Get",
+    "List",
+    "Set",
+    "Delete",
+    "Recover",
+    "Backup",
+    "Restore",
+  ]
+}
+
+resource "azurerm_key_vault_secret" "license_file" {
+  name         = "license-file"
+  value        = filebase64("${var.path_to_license_file}")
+  key_vault_id = azurerm_key_vault.longlegs.id
+
+  tags = var.common_tags
+
+  depends_on = [
+    azurerm_key_vault_access_policy.longlegs
+  ]
 }

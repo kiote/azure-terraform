@@ -5,3 +5,13 @@ variable "common_tags" {
     CreatedBy = "Terraform"
   }
 }
+
+variable "path_to_license_file" {
+  description = "Path to the license file"
+  type        = string
+}
+
+variable "ansible_user" {
+  description = "The user to be used for Ansible"
+  type        = string
+}

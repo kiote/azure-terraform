@@ -1,0 +1,2 @@
+ansible_user = "adminuser"
+path_to_license_file = "/home/someuser/license.lic"
