@@ -87,7 +87,7 @@ resource "azurerm_virtual_machine" "longlegs" {
   location              = azurerm_resource_group.longlegs.location
   resource_group_name   = azurerm_resource_group.longlegs.name
   network_interface_ids = [azurerm_network_interface.longlegs.id]
-  vm_size               = "Standard_B1ls"
+  vm_size               = "Standard_B2s"
 
   tags = var.common_tags
 
