@@ -8,6 +8,8 @@ The later described for Ubuntu system.
 * terraform
 * az cli
 * Azure subscription
+* ansible-playbook
+* `~/.ssh/id_ed25519.pub` and `~/.ssh/id_ed25519`
 
 ### Install Terraform
 
@@ -59,8 +61,16 @@ az login --tenant <your tenant> --use-device-code
 ```
 
 
-### Apply
+### Apply Terraform
 
 ```
 terraform apply -var-file="main.tfvars"
+```
+
+### Run Ansible playbook
+
+```
+VM_PUBLIC_IP=$(terraform output -raw vm_public_ip)
+
+ansible-playbook -i "${VM_PUBLIC_IP}," -u adminuser --private-key /path/to/your/private/key playbook.yml
 ```
