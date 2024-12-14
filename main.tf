@@ -107,13 +107,13 @@ resource "azurerm_virtual_machine" "longlegs" {
 
   os_profile {
     computer_name  = "longlegs-vm"
-    admin_username = "adminuser"
+    admin_username = "{{ ansible_user }}"
   }
 
   os_profile_linux_config {
     disable_password_authentication = true
     ssh_keys {
-      path     = "/home/adminuser/.ssh/authorized_keys"
+      path     = "/home/{{ ansible_user }}/.ssh/authorized_keys"
       key_data = file("~/.ssh/id_ed25519.pub")
     }
   }

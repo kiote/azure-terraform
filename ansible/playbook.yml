@@ -8,4 +8,5 @@
     - include_tasks: tasks/k3s.yml
     - include_tasks: tasks/git.yml
     - include_tasks: tasks/docker.yml
+    - include_tasks: tasks/containerd.yml
     - include_tasks: tasks/k3s_services.yml

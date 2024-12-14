@@ -6,7 +6,7 @@
 
 - name: Add user to docker group
   user:
-    name: adminuser
+    name: "{{ ansible_user }}"
     groups: docker
     append: yes
 
@@ -20,17 +20,23 @@
   ignore_errors: yes
 
 - name: Build Docker image
-  shell: docker build -t {{ docker_image_name }}:latest /home/adminuser/apps/{{ app_name }}
+  shell: docker build -t {{ docker_image_name }}:latest /home/{{ ansible_user }}/apps/{{ app_name }}
   args:
-    chdir: /home/adminuser/apps/{{ app_name }}
+    chdir: /home/{{ ansible_user }}/apps/{{ app_name }}
   become: yes
-  become_user: adminuser
+  become_user: "{{ ansible_user }}"
   register: build_output
   failed_when: build_output.rc != 0
 
 - name: List Docker images
   shell: docker images
   register: docker_images_output
+
+- name: Save Docker image to tar file
+  shell: docker save -o /tmp/{{ docker_image_name }}.tar {{ docker_image_name }}:latest
+
+- name: Load Docker image into containerd
+  shell: ctr -n k8s.io images import /tmp/{{ docker_image_name }}.tar
 
 - name: Display Docker images
   debug:

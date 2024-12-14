@@ -7,8 +7,8 @@
 - name: Clone git repo
   git:
     repo: "{{ git_repo_url }}"
-    dest: /home/adminuser/apps/{{ app_name }}
+    dest: /home/{{ ansible_user }}/apps/{{ app_name }}
     version: HEAD
     force: yes
   become: yes
-  become_user: adminuser
+  become_user: "{{ ansible_user }}"

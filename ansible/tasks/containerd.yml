@@ -1,0 +1,48 @@
+---
+- name: Create containerd group
+  group:
+    name: containerd
+    state: present
+
+- name: Add user to containerd group
+  user:
+    name: "{{ ansible_user }}"
+    groups: containerd
+    append: yes
+
+- name: Create systemd override directory
+  file:
+    path: /etc/systemd/system/k3s.service.d
+    state: directory
+    mode: '0755'
+
+- name: Create systemd override file
+  copy:
+    dest: /etc/systemd/system/k3s.service.d/override.conf
+    content: |
+      [Service]
+      ExecStartPost=/bin/chmod 660 /run/containerd/containerd.sock
+      ExecStartPost=/bin/chown root:containerd /run/containerd/containerd.sock
+    mode: '0644'
+
+- name: Set immediate permissions on containerd socket
+  file:
+    path: /run/containerd/containerd.sock
+    mode: '660'
+    group: containerd
+  ignore_errors: yes  # In case the socket doesn't exist yet
+
+- name: Restart k3s service
+  systemd:
+    name: k3s
+    state: restarted
+    daemon_reload: yes
+
+- name: Wait for k3s to be ready
+  wait_for:
+    path: /run/containerd/containerd.sock
+    timeout: 30
+
+- name: Print reminder about session reload
+  debug:
+    msg: "Remember: The user will need to log out and back in for the group changes to take effect."

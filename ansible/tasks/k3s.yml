@@ -7,6 +7,6 @@
   become: yes
 
 - name: Set KUBECONFIG environment variable
-  shell: echo "export KUBECONFIG=/etc/rancher/k3s/k3s.yaml" >> /home/adminuser/.bashrc
+  shell: echo "export KUBECONFIG=/etc/rancher/k3s/k3s.yaml" >> /home/{{ ansible_user }}/.bashrc
   become: yes
-  become_user: adminuser
+  become_user: "{{ ansible_user }}"
