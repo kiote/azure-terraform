@@ -33,12 +33,6 @@ terraform -help
 
 In case of problems, check the latest installation procedures [here](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
 
-### Change vars
-
-Copy tfvars.example file:
-
-`cp main.tfvars.example main.tfvars`
-
 ### Install Azure CLI
 
 ```
@@ -78,6 +72,12 @@ sudo apt install ansible
 ```
 
 In case of problems, check the latest installation procedures [here](https://docs.ansible.com/ansible/latest/installation_guide/installation_distros.html#installing-ansible-on-ubuntu)
+
+### Add your values to vars.yml
+
+1. Move vars.yml.example to vars.yml
+
+`mv ansible/vars.yml.example ansible/vars.yml`
 
 ### Run Ansible playbook
 

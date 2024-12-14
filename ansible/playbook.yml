@@ -1,6 +1,8 @@
 ---
 - hosts: all
   become: yes
+  vars_files:
+    - vars.yml
   tasks:
     - name: Update apt cache
       apt:
@@ -8,3 +10,13 @@
 
     - name: Install k3s
       shell: curl -sfL https://get.k3s.io | sh -
+
+    - name: install git
+      apt:
+        name: git
+        state: present
+
+    - name: Clone git repo
+      git:
+        repo: "{{ git_repo_url }}"
+        dest: /home/adminuser/apps
