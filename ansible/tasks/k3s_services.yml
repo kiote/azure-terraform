@@ -59,9 +59,9 @@
           app: {{ app_name }}
         ports:
           - protocol: TCP
-            port: 443
-            targetPort: 5000
-        type: LoadBalancer
+            port: 80
+            targetPort: 5000  # This is your application port
+        type: ClusterIP 
 
 - name: Create Kubernetes Ingress file
   copy:
@@ -75,7 +75,7 @@
         name: {{ app_name }}-ingress
         namespace: {{ app_namespace }}
         annotations:
-          kubernetes.io/ingress.class: "traefik"
+            kubernetes.io/ingress.class: "traefik"
       spec:
         rules:
         - host: {{ app_subdomain }}.{{ app_domain }}
@@ -87,7 +87,7 @@
                 service:
                   name: {{ app_name }}
                   port:
-                    number: 443
+                    number: 80
 
 - name: Remove namespace if it exists
   shell: kubectl delete -f /home/{{ ansible_user }}/k3s/{{ app_name }}/namespace.yml
