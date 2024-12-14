@@ -1,0 +1,51 @@
+---
+- name: Create Kubernetes deployment file
+  copy:
+    dest: /home/adminuser/deployment.yml
+    content: |
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: {{ app_name }}
+      spec:
+        replicas: 1
+        selector:
+          matchLabels:
+            app: {{ app_name }}
+        template:
+          metadata:
+            labels:
+              app: {{ app_name }}
+          spec:
+            containers:
+            - name: {{ app_name }}
+              image: {{ docker_image_name }}:latest
+              ports:
+              - containerPort: 5000
+
+- name: Create Kubernetes service file
+  copy:
+    dest: /home/adminuser/service.yml
+    content: |
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: {{ app_name }}
+      spec:
+        selector:
+          app: {{ app_name }}
+        ports:
+          - protocol: TCP
+            port: 80
+            targetPort: 5000
+        type: LoadBalancer
+
+- name: Apply Kubernetes deployment
+  shell: kubectl apply -f /home/adminuser/deployment.yml
+  become: yes
+  become_user: adminuser
+
+- name: Apply Kubernetes service
+  shell: kubectl apply -f /home/adminuser/service.yml
+  become: yes
+  become_user: adminuser

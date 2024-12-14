@@ -1,3 +1,12 @@
 ---
 - name: Install k3s
   shell: curl -sfL https://get.k3s.io | sh -
+
+- name: Modify permissions of Kubernetes config file
+  command: chmod 644 /etc/rancher/k3s/k3s.yaml
+  become: yes
+
+- name: Set KUBECONFIG environment variable
+  shell: echo "export KUBECONFIG=/etc/rancher/k3s/k3s.yaml" >> /home/adminuser/.bashrc
+  become: yes
+  become_user: adminuser

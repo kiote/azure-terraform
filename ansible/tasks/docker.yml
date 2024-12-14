@@ -28,10 +28,6 @@
   register: build_output
   failed_when: build_output.rc != 0
 
-- name: Display build output
-  debug:
-    var: build_output.stdout_lines
-
 - name: List Docker images
   shell: docker images
   register: docker_images_output
