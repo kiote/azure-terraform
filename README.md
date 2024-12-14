@@ -1,5 +1,5 @@
 # hetzner-terraform
-Hetzner cloud automation
+Azure cloud automation
 
 ## Prerequizites
 
@@ -7,6 +7,7 @@ The later described for Ubuntu system.
 
 * terraform
 * az cli
+* Azure subscription
 
 ### Install Terraform
 

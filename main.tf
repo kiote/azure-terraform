@@ -1,17 +1,3 @@
-terraform {
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "~> 3.0"
-    }
-  }
-
-  required_version = ">= 0.12"
-}
-provider "azurerm" {
-  features {}
-}
-
 resource "azurerm_resource_group" "longlegs" {
   name     = "longlegs-resources"
   location = "North Europe"
@@ -104,10 +90,4 @@ resource "azurerm_virtual_machine" "longlegs" {
   os_profile_linux_config {
     disable_password_authentication = false
   }
-}
-
-variable "admin_password" {
-  description = "The admin password for the virtual machine"
-  type        = string
-  sensitive   = true
 }
