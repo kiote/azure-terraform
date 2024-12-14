@@ -158,3 +158,46 @@ resource "azurerm_key_vault_secret" "license_file" {
     azurerm_key_vault_access_policy.longlegs
   ]
 }
+
+data "azurerm_key_vault_secret" "license_file" {
+  name         = azurerm_key_vault_secret.license_file.name
+  key_vault_id = azurerm_key_vault.longlegs.id
+}
+
+resource "local_file" "license_file" {
+  content  = base64decode(data.azurerm_key_vault_secret.license_file.value)
+  filename = "/tmp/pysmile_license.py"
+}
+
+resource "null_resource" "copy_license_to_remote" {
+  provisioner "file" {
+    source      = "/tmp/pysmile_license.py"
+    destination = "/tmp/pysmile_license.py"
+
+    connection {
+      type        = "ssh"
+      user        = var.ansible_user
+      private_key = file("~/.ssh/id_ed25519")
+      host        = azurerm_public_ip.longlegs.ip_address
+    }
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "mkdir -p /home/${var.ansible_user}/license",
+      "mv /tmp/pysmile_license.py /home/${var.ansible_user}/license/pysmile_license.py",
+      "chown ${var.ansible_user}:${var.ansible_user} /home/${var.ansible_user}/license/pysmile_license.py"
+    ]
+
+    connection {
+      type        = "ssh"
+      user        = var.ansible_user
+      private_key = file("~/.ssh/id_ed25519")
+      host        = azurerm_public_ip.longlegs.ip_address
+    }
+  }
+
+  depends_on = [
+    local_file.license_file
+  ]
+}

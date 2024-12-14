@@ -12,3 +12,10 @@
     force: yes
   become: yes
   become_user: "{{ ansible_user }}"
+
+- name: Copy license file
+  copy:
+    src: "/home/{{ ansible_user }}/license/pysmile_license.py"
+    dest: /home/{{ ansible_user }}/apps/{{ app_name }}/pysmile_license.py
+  become: yes
+  become_user: "{{ ansible_user }}"
