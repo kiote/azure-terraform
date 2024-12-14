@@ -11,10 +11,9 @@ The later described for Ubuntu system.
 * ansible-playbook
 * `~/.ssh/id_ed25519.pub` and `~/.ssh/id_ed25519`
 
+All commands listed below you are expected to run on your local machine.
+
 ### Install Terraform
-
-Check the latest installation procedures [here](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
-
 
 ```
 sudo apt-get update && sudo apt-get install -y gnupg software-properties-common
@@ -32,6 +31,8 @@ sudo apt-get install terraform
 terraform -help
 ```
 
+In case of problems, check the latest installation procedures [here](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
+
 ### Change vars
 
 Copy tfvars.example file:
@@ -40,11 +41,11 @@ Copy tfvars.example file:
 
 ### Install Azure CLI
 
-Check the latest installation procedures [here](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-linux)
-
 ```
 curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 ```
+
+In case of problems, check the latest installation procedures [here](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-linux)
 
 ### Login to Azure
 
@@ -67,10 +68,21 @@ az login --tenant <your tenant> --use-device-code
 terraform apply -var-file="main.tfvars"
 ```
 
+### Install ansible
+
+```
+sudo apt update
+sudo apt install software-properties-common
+sudo add-apt-repository --yes --update ppa:ansible/ansible
+sudo apt install ansible
+```
+
+In case of problems, check the latest installation procedures [here](https://docs.ansible.com/ansible/latest/installation_guide/installation_distros.html#installing-ansible-on-ubuntu)
+
 ### Run Ansible playbook
 
 ```
 VM_PUBLIC_IP=$(terraform output -raw vm_public_ip)
 
-ansible-playbook -i "${VM_PUBLIC_IP}," -u adminuser --private-key /path/to/your/private/key playbook.yml
+ansible-playbook -i "${VM_PUBLIC_IP}," -u adminuser --private-key=~/.ssh/id_ed25519 ansible/playbook.yml
 ```
