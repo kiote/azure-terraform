@@ -7,6 +7,8 @@
 - name: Create Kubernetes namespace file
   copy:
     dest: /home/{{ ansible_user }}/k3s/{{ app_name }}/namespace.yml
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
     content: |
       apiVersion: v1
       kind: Namespace
@@ -35,13 +37,17 @@
             containers:
             - name: {{ app_name }}
               image: {{ docker_image_name }}:latest
-              imagePullPolicy: IfNotPresent
+              imagePullPolicy: Never # Only local images
               ports:
               - containerPort: 5000
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
 
 - name: Create Kubernetes service file
   copy:
     dest: /home/{{ ansible_user }}/k3s/{{ app_name }}/service.yml
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
     content: |
       apiVersion: v1
       kind: Service

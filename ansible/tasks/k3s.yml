@@ -1,12 +1,78 @@
 ---
+# Install k3s with containerd configuration
+- name: Create containerd config directory
+  file:
+    path: /etc/rancher/k3s
+    state: directory
+    mode: '0755'
+
+- name: Create containerd config
+  copy:
+    dest: /etc/rancher/k3s/config.yaml
+    content: |
+      write-kubeconfig-mode: "644"
+      docker: false
+      containerd-config-template: |
+        [plugins.opt]
+          path = "/var/lib/rancher/k3s/agent/containerd"
+        [plugins.cri]
+          stream_server_address = ""
+          stream_server_port = "10010"
+          enable_selinux = false
+          sandbox_image = "rancher/mirrored-pause:3.6"
+        [plugins.cri.containerd]
+          snapshotter = "overlayfs"
+          disable_snapshot_annotations = true
+        [plugins.cri.containerd.runtimes.runc]
+          runtime_type = "io.containerd.runc.v2"
+    mode: '0644'
+
 - name: Install k3s
   shell: curl -sfL https://get.k3s.io | sh -
+  args:
+    creates: /usr/local/bin/k3s
 
-- name: Modify permissions of Kubernetes config file
-  command: chmod 644 /etc/rancher/k3s/k3s.yaml
-  become: yes
+# Setup containerd permissions
+- name: Create containerd group
+  group:
+    name: containerd
+    state: present
 
-- name: Set KUBECONFIG environment variable
-  shell: echo "export KUBECONFIG=/etc/rancher/k3s/k3s.yaml" >> /home/{{ ansible_user }}/.bashrc
-  become: yes
-  become_user: "{{ ansible_user }}"
+- name: Add user to containerd group
+  user:
+    name: "{{ ansible_user }}"
+    groups: containerd
+    append: yes
+
+- name: Create systemd override directory
+  file:
+    path: /etc/systemd/system/k3s.service.d
+    state: directory
+    mode: '0755'
+
+- name: Create systemd override file
+  copy:
+    dest: /etc/systemd/system/k3s.service.d/override.conf
+    content: |
+      [Service]
+      ExecStartPost=/bin/chmod 660 /run/containerd/containerd.sock
+      ExecStartPost=/bin/chown root:containerd /run/containerd/containerd.sock
+    mode: '0644'
+
+# Setup Kubernetes configuration
+- name: Ensure .kube directory exists
+  file:
+    path: "/home/{{ ansible_user }}/.kube"
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0755'
+
+- name: Create symbolic link for kubectl config
+  file:
+    src: /etc/rancher/k3s/k3s.yaml
+    dest: "/home/{{ ansible_user }}/.kube/config"
+    state: link
+    force: yes
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"

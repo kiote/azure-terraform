@@ -28,16 +28,20 @@
   register: build_output
   failed_when: build_output.rc != 0
 
-- name: List Docker images
-  shell: docker images
-  register: docker_images_output
+- name: Create directory for Docker image
+  file:
+    path: "/home/{{ ansible_user }}/docker_images"
+    state: directory
+    mode: '0755'
+  become: yes
+  become_user: "{{ ansible_user }}"
 
-- name: Save Docker image to tar file
-  shell: docker save -o /tmp/{{ docker_image_name }}.tar {{ docker_image_name }}:latest
+# Import local Docker image to k3s
+- name: Save Docker image to tar
+  shell: docker save {{ docker_image_name }}:latest -o /home/{{ ansible_user }}/docker_images/{{ app_name }}.tar
+  become: yes
+  become_user: "{{ ansible_user }}"
 
-- name: Load Docker image into containerd
-  shell: ctr -n k8s.io images import /tmp/{{ docker_image_name }}.tar
-
-- name: Display Docker images
-  debug:
-    var: docker_images_output.stdout_lines
+- name: Import image to k3s
+  shell: k3s ctr images import /home/{{ ansible_user }}/docker_images/{{ app_name }}.tar
+  become: yes
