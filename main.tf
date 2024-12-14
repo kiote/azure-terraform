@@ -1,6 +1,8 @@
 resource "azurerm_resource_group" "longlegs" {
   name     = "longlegs-resources"
   location = "North Europe"
+
+  tags = var.common_tags
 }
 
 resource "azurerm_virtual_network" "longlegs" {
@@ -8,6 +10,8 @@ resource "azurerm_virtual_network" "longlegs" {
   address_space       = ["10.0.0.0/16"]
   location            = azurerm_resource_group.longlegs.location
   resource_group_name = azurerm_resource_group.longlegs.name
+
+  tags = var.common_tags
 }
 
 resource "azurerm_subnet" "longlegs" {
@@ -28,6 +32,8 @@ resource "azurerm_network_interface" "longlegs" {
     private_ip_address_allocation = "Dynamic"
     public_ip_address_id          = azurerm_public_ip.longlegs.id
   }
+
+  tags = var.common_tags
 }
 
 resource "azurerm_public_ip" "longlegs" {
@@ -35,6 +41,8 @@ resource "azurerm_public_ip" "longlegs" {
   location            = azurerm_resource_group.longlegs.location
   resource_group_name = azurerm_resource_group.longlegs.name
   allocation_method   = "Dynamic"
+
+  tags = var.common_tags
 }
 
 resource "azurerm_network_security_group" "longlegs" {
@@ -53,6 +61,8 @@ resource "azurerm_network_security_group" "longlegs" {
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
+
+  tags = var.common_tags
 }
 
 resource "azurerm_network_interface_security_group_association" "longlegs" {
@@ -66,6 +76,8 @@ resource "azurerm_virtual_machine" "longlegs" {
   resource_group_name   = azurerm_resource_group.longlegs.name
   network_interface_ids = [azurerm_network_interface.longlegs.id]
   vm_size               = "Standard_B1ls"
+
+  tags = var.common_tags
 
   storage_os_disk {
     name              = "longlegs-os-disk"

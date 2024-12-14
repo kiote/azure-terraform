@@ -1,5 +1,7 @@
-variable "admin_password" {
-  description = "The admin password for the virtual machine"
-  type        = string
-  sensitive   = true
+variable "common_tags" {
+  description = "Common tags to be applied to all resources"
+  type        = map(string)
+  default = {
+    CreatedBy = "Terraform"
+  }
 }
