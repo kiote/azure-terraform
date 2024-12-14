@@ -63,6 +63,12 @@
             targetPort: 5000
         type: LoadBalancer
 
+- name: Remove namespace if it exists
+  shell: kubectl delete -f /home/{{ ansible_user }}/k3s/{{ app_name }}/namespace.yml
+  ignore_errors: yes
+  become: yes
+  become_user: "{{ ansible_user }}"
+
 - name: Apply Kubernetes namespace
   shell: kubectl apply -f /home/{{ ansible_user }}/k3s/{{ app_name }}/namespace.yml
   become: yes
