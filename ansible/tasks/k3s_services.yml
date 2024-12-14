@@ -1,7 +1,12 @@
 ---
+- name: Create Kubernetes directory
+  file:
+    path: /home/adminuser/k3s/{{ app_name }}
+    state: directory
+
 - name: Create Kubernetes namespace file
   copy:
-    dest: /home/adminuser/namespace.yml
+    dest: /home/adminuser/k3s/{{ app_name }}/namespace.yml
     content: |
       apiVersion: v1
       kind: Namespace
@@ -10,7 +15,7 @@
 
 - name: Create Kubernetes deployment file
   copy:
-    dest: /home/adminuser/deployment.yml
+    dest: /home/adminuser/k3s/{{ app_name }}/deployment.yml
     content: |
       apiVersion: apps/v1
       kind: Deployment
@@ -35,7 +40,7 @@
 
 - name: Create Kubernetes service file
   copy:
-    dest: /home/adminuser/service.yml
+    dest: /home/adminuser/k3s/{{ app_name }}/service.yml
     content: |
       apiVersion: v1
       kind: Service
@@ -51,12 +56,17 @@
             targetPort: 5000
         type: LoadBalancer
 
+- name: Apply Kubernetes namespace
+  shell: kubectl apply -f /home/adminuser/k3s/{{ app_name }}/namespace.yml
+  become: yes
+  become_user: adminuser
+
 - name: Apply Kubernetes deployment
-  shell: kubectl apply -f /home/adminuser/deployment.yml
+  shell: kubectl apply -f /home/adminuser/k3s/{{ app_name }}/deployment.yml
   become: yes
   become_user: adminuser
 
 - name: Apply Kubernetes service
-  shell: kubectl apply -f /home/adminuser/service.yml
+  shell: kubectl apply -f /home/adminuser/k3s/{{ app_name }}/service.yml
   become: yes
   become_user: adminuser
