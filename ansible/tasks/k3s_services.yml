@@ -59,9 +59,35 @@
           app: {{ app_name }}
         ports:
           - protocol: TCP
-            port: 80
+            port: 443
             targetPort: 5000
         type: LoadBalancer
+
+- name: Create Kubernetes Ingress file
+  copy:
+    dest: /home/{{ ansible_user }}/k3s/{{ app_name }}/ingress.yml
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    content: |
+      apiVersion: networking.k8s.io/v1
+      kind: Ingress
+      metadata:
+        name: {{ app_name }}-ingress
+        namespace: {{ app_namespace }}
+        annotations:
+          kubernetes.io/ingress.class: "traefik"
+      spec:
+        rules:
+        - host: {{ app_subdomain }}.{{ app_domain }}
+          http:
+            paths:
+            - path: /
+              pathType: Prefix
+              backend:
+                service:
+                  name: {{ app_name }}
+                  port:
+                    number: 443
 
 - name: Remove namespace if it exists
   shell: kubectl delete -f /home/{{ ansible_user }}/k3s/{{ app_name }}/namespace.yml
@@ -81,5 +107,10 @@
 
 - name: Apply Kubernetes service
   shell: kubectl apply -f /home/{{ ansible_user }}/k3s/{{ app_name }}/service.yml
+  become: yes
+  become_user: "{{ ansible_user }}"
+
+- name: Apply Kubernetes Ingress
+  shell: kubectl apply -f /home/{{ ansible_user }}/k3s/{{ app_name }}/ingress.yml
   become: yes
   become_user: "{{ ansible_user }}"
