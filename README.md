@@ -86,3 +86,9 @@ VM_PUBLIC_IP=$(terraform output -raw vm_public_ip)
 
 ansible-playbook -i "${VM_PUBLIC_IP}," -u adminuser --private-key=~/.ssh/id_ed25519 ansible/playbook.yml
 ```
+
+### Debug with sidecar
+
+```
+kubectl debug -n <namespace> <pod-id> -it --image=nicolaka/netshoot --share-processes --copy-to=<namespace>-debug
+```

@@ -23,8 +23,6 @@
   shell: docker build -t {{ docker_image_name }}:latest /home/{{ ansible_user }}/apps/{{ app_name }}
   args:
     chdir: /home/{{ ansible_user }}/apps/{{ app_name }}
-  become: yes
-  become_user: "{{ ansible_user }}"
   register: build_output
   failed_when: build_output.rc != 0
 
