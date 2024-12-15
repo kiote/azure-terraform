@@ -15,7 +15,7 @@
 
 - name: Copy license file
   copy:
-    src: "/home/{{ ansible_user }}/license/pysmile_license.py"
+    src: "/tmp/pysmile_license.py"
     dest: /home/{{ ansible_user }}/apps/{{ app_name }}/pysmile_license.py
     remote_src: yes
   become: yes

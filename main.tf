@@ -182,21 +182,6 @@ resource "null_resource" "copy_license_to_remote" {
     }
   }
 
-  provisioner "remote-exec" {
-    inline = [
-      "mkdir -p /home/${var.ansible_user}/license",
-      "mv /tmp/pysmile_license.py /home/${var.ansible_user}/license/pysmile_license.py",
-      "chown ${var.ansible_user}:${var.ansible_user} /home/${var.ansible_user}/license/pysmile_license.py"
-    ]
-
-    connection {
-      type        = "ssh"
-      user        = var.ansible_user
-      private_key = file("~/.ssh/id_ed25519")
-      host        = azurerm_public_ip.longlegs.ip_address
-    }
-  }
-
   depends_on = [
     local_file.license_file
   ]
