@@ -4,6 +4,33 @@
     path: /home/{{ ansible_user }}/k3s/{{ app_name }}
     state: directory
 
+- name: Install cert manager
+  shell: |
+    kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.1/cert-manager.yaml
+  become: yes
+  become_user: "{{ ansible_user }}"
+
+- name: Create cert issuer for letsencrypt
+  copy:
+    dest: /home/{{ ansible_user }}/k3s/{{ app_name }}/cert-issuer.yml
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    content: |
+      apiVersion: cert-manager.io/v1
+      kind: ClusterIssuer
+      metadata:
+        name: letsencrypt-issuer
+      spec:
+        acme:
+          server: https://acme-v02.api.letsencrypt.org/directory
+          email: {{ letsencrypt_email }}
+          privateKeySecretRef:
+            name: letsencrypt-issuer-key
+          solvers:
+          - http01:
+              ingress:
+                class: traefik
+
 - name: Create Kubernetes namespace file
   copy:
     dest: /home/{{ ansible_user }}/k3s/{{ app_name }}/namespace.yml
@@ -74,7 +101,14 @@
       metadata:
         name: {{ app_name }}-ingress
         namespace: {{ app_namespace }}
+        annotations:
+          cert-manager.io/cluster-issuer: "letsencrypt-issuer"
+          traefik.ingress.kubernetes.io/router.tls: "true"
       spec:
+        tls:
+        - hosts:
+          - {{ app_subdomain }}.{{ app_domain }}
+          secretName: {{ app_name }}-tls
         ingressClassName: traefik
         rules:
         - host: {{ app_subdomain }}.{{ app_domain }}
@@ -96,6 +130,11 @@
 
 - name: Apply Kubernetes namespace
   shell: kubectl apply -f /home/{{ ansible_user }}/k3s/{{ app_name }}/namespace.yml
+  become: yes
+  become_user: "{{ ansible_user }}"
+
+- name: Apply cert issuer
+  shell: kubectl apply -f /home/{{ ansible_user }}/k3s/{{ app_name }}/cert-issuer.yml
   become: yes
   become_user: "{{ ansible_user }}"
 
