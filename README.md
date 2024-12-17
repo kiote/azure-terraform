@@ -79,6 +79,12 @@ In case of problems, check the latest installation procedures [here](https://doc
 
 `mv ansible/vars.yml.example ansible/vars.yml`
 
+### Install Ansible requirements
+
+```
+ansible-galaxy collection install -r ansible/requirements.yml
+```
+
 ### Run Ansible playbook
 
 ```

@@ -11,144 +11,93 @@
   become_user: "{{ ansible_user }}"
 
 - name: Create cert issuer for letsencrypt
-  copy:
+  template:
+    src: cert-issuer.yml.j2
     dest: /home/{{ ansible_user }}/k3s/{{ app_name }}/cert-issuer.yml
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
-    content: |
-      apiVersion: cert-manager.io/v1
-      kind: ClusterIssuer
-      metadata:
-        name: letsencrypt-issuer
-      spec:
-        acme:
-          server: https://acme-v02.api.letsencrypt.org/directory
-          email: {{ letsencrypt_email }}
-          privateKeySecretRef:
-            name: letsencrypt-issuer-key
-          solvers:
-          - http01:
-              ingress:
-                class: traefik
 
 - name: Create Kubernetes namespace file
-  copy:
+  template:
+    src: namespace.yml.j2
     dest: /home/{{ ansible_user }}/k3s/{{ app_name }}/namespace.yml
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
-    content: |
-      apiVersion: v1
-      kind: Namespace
-      metadata:
-        name: {{ app_namespace }}
+
 
 - name: Create Kubernetes deployment file
-  copy:
+  template:
+    src: deployment.yml.j2
     dest: /home/{{ ansible_user }}/k3s/{{ app_name }}/deployment.yml
-    content: |
-      apiVersion: apps/v1
-      kind: Deployment
-      metadata:
-        name: {{ app_name }}
-        namespace: {{ app_namespace }}
-      spec:
-        replicas: 1
-        selector:
-          matchLabels:
-            app: {{ app_name }}
-        template:
-          metadata:
-            labels:
-              app: {{ app_name }}
-          spec:
-            containers:
-            - name: {{ app_name }}
-              image: {{ docker_image_name }}:latest
-              imagePullPolicy: Never # Only local images
-              ports:
-              - containerPort: 5000
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
 
 - name: Create Kubernetes service file
-  copy:
+  template:
+    src: service.yml.j2
     dest: /home/{{ ansible_user }}/k3s/{{ app_name }}/service.yml
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
-    content: |
-      apiVersion: v1
-      kind: Service
-      metadata:
-        name: {{ app_name }}
-        namespace: {{ app_namespace }}
-      spec:
-        selector:
-          app: {{ app_name }}
-        ports:
-          - protocol: TCP
-            port: 80
-            targetPort: 5000  # This is your application port
-        type: ClusterIP 
 
 - name: Create Kubernetes Ingress file
-  copy:
-    dest: /home/{{ ansible_user }}/k3s/{{ app_name }}/ingress.yml
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
-    content: |
-      apiVersion: networking.k8s.io/v1
-      kind: Ingress
-      metadata:
-        name: {{ app_name }}-ingress
-        namespace: {{ app_namespace }}
-        annotations:
-          cert-manager.io/cluster-issuer: "letsencrypt-issuer"
-          traefik.ingress.kubernetes.io/router.tls: "true"
-      spec:
-        tls:
-        - hosts:
-          - {{ app_subdomain }}.{{ app_domain }}
-          secretName: {{ app_name }}-tls
-        ingressClassName: traefik
-        rules:
-        - host: {{ app_subdomain }}.{{ app_domain }}
-          http:
-            paths:
-            - path: /
-              pathType: Prefix
-              backend:
-                service:
-                  name: {{ app_name }}
-                  port:
-                    number: 80
+  template:
+      src: ingress.yml.j2
+      dest: "/home/{{ ansible_user }}/k3s/{{ app_name }}/ingress.yml"
+      owner: "{{ ansible_user }}"
+      group: "{{ ansible_user }}"
+      mode: '0644'
 
 - name: Remove namespace if it exists
-  shell: kubectl delete -f /home/{{ ansible_user }}/k3s/{{ app_name }}/namespace.yml
+  kubernetes.core.k8s:
+    state: absent
+    src: "/home/{{ ansible_user }}/k3s/{{ app_name }}/namespace.yml"
+  ignore_errors: yes
+  become: yes
+  become_user: "{{ ansible_user }}"
+
+- name: Wait for namespace deletion to complete
+  kubernetes.core.k8s_info:
+    kind: Namespace
+    name: "{{ app_namespace }}"
+  register: namespace_check
+  until: namespace_check.failed or namespace_check.resources | length == 0
+  retries: 30
+  delay: 10
   ignore_errors: yes
   become: yes
   become_user: "{{ ansible_user }}"
 
 - name: Apply Kubernetes namespace
-  shell: kubectl apply -f /home/{{ ansible_user }}/k3s/{{ app_name }}/namespace.yml
+  kubernetes.core.k8s:
+    state: present
+    src: "/home/{{ ansible_user }}/k3s/{{ app_name }}/namespace.yml"
   become: yes
   become_user: "{{ ansible_user }}"
 
 - name: Apply cert issuer
-  shell: kubectl apply -f /home/{{ ansible_user }}/k3s/{{ app_name }}/cert-issuer.yml
+  kubernetes.core.k8s:
+    state: present
+    src: "/home/{{ ansible_user }}/k3s/{{ app_name }}/cert-issuer.yml"
   become: yes
   become_user: "{{ ansible_user }}"
 
 - name: Apply Kubernetes deployment
-  shell: kubectl apply -f /home/{{ ansible_user }}/k3s/{{ app_name }}/deployment.yml
+  kubernetes.core.k8s:
+    state: present
+    src: "/home/{{ ansible_user }}/k3s/{{ app_name }}/deployment.yml"
   become: yes
   become_user: "{{ ansible_user }}"
 
 - name: Apply Kubernetes service
-  shell: kubectl apply -f /home/{{ ansible_user }}/k3s/{{ app_name }}/service.yml
+  kubernetes.core.k8s:
+    state: present
+    src: "/home/{{ ansible_user }}/k3s/{{ app_name }}/service.yml"
   become: yes
   become_user: "{{ ansible_user }}"
 
 - name: Apply Kubernetes Ingress
-  shell: kubectl apply -f /home/{{ ansible_user }}/k3s/{{ app_name }}/ingress.yml
+  kubernetes.core.k8s:
+    state: present
+    src: "/home/{{ ansible_user }}/k3s/{{ app_name }}/ingress.yml"
   become: yes
   become_user: "{{ ansible_user }}"

@@ -173,17 +173,13 @@ resource "azurerm_key_vault_secret" "license_file" {
   ]
 }
 
-data "azurerm_key_vault_secret" "license_file" {
-  name         = azurerm_key_vault_secret.license_file.name
-  key_vault_id = azurerm_key_vault.longlegs.id
-}
-
-resource "local_file" "license_file" {
-  content  = base64decode(data.azurerm_key_vault_secret.license_file.value)
-  filename = "/tmp/pysmile_license.py"
-}
-
 resource "null_resource" "copy_license_to_remote" {
+  provisioner "local-exec" {
+    command = <<EOT
+      echo "${base64decode(azurerm_key_vault_secret.license_file.value)}" > /tmp/pysmile_license.py
+    EOT
+  }
+
   provisioner "file" {
     source      = "/tmp/pysmile_license.py"
     destination = "/tmp/pysmile_license.py"
@@ -197,6 +193,6 @@ resource "null_resource" "copy_license_to_remote" {
   }
 
   depends_on = [
-    local_file.license_file
+    azurerm_key_vault_secret.license_file
   ]
 }

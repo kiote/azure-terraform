@@ -2,3 +2,15 @@
 - name: Update apt cache
   apt:
     update_cache: yes
+
+- name: Install kubernetes module dependencies
+  apt:
+    name:
+      - python3-pip
+      - python3-setuptools
+    state: present
+
+- name: Install kubernetes Python package with pip
+  pip:
+    name: kubernetes>=24.2.0
+    state: present
