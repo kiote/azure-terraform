@@ -7,24 +7,9 @@
     mode: '0755'
 
 - name: Create containerd config
-  copy:
+  template:
     dest: /etc/rancher/k3s/config.yaml
-    content: |
-      write-kubeconfig-mode: "644"
-      docker: false
-      containerd-config-template: |
-        [plugins.opt]
-          path = "/var/lib/rancher/k3s/agent/containerd"
-        [plugins.cri]
-          stream_server_address = ""
-          stream_server_port = "10010"
-          enable_selinux = false
-          sandbox_image = "rancher/mirrored-pause:3.6"
-        [plugins.cri.containerd]
-          snapshotter = "overlayfs"
-          disable_snapshot_annotations = true
-        [plugins.cri.containerd.runtimes.runc]
-          runtime_type = "io.containerd.runc.v2"
+    src: config.yaml.j2
     mode: '0644'
 
 - name: Install k3s
@@ -51,12 +36,9 @@
     mode: '0755'
 
 - name: Create systemd override file
-  copy:
+  template:
     dest: /etc/systemd/system/k3s.service.d/override.conf
-    content: |
-      [Service]
-      ExecStartPost=/bin/chmod 660 /run/containerd/containerd.sock
-      ExecStartPost=/bin/chown root:containerd /run/containerd/containerd.sock
+    src: override.conf.j2
     mode: '0644'
 
 # Setup Kubernetes configuration
