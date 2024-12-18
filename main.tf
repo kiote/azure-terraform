@@ -196,3 +196,94 @@ resource "null_resource" "copy_license_to_remote" {
     azurerm_key_vault_secret.license_file
   ]
 }
+
+# Create a subnet for PostgreSQL
+resource "azurerm_subnet" "postgres" {
+  name                 = "postgres-subnet"
+  resource_group_name  = azurerm_resource_group.longlegs.name
+  virtual_network_name = azurerm_virtual_network.longlegs.name
+  address_prefixes     = ["10.0.3.0/24"]
+  
+  delegation {
+    name = "fs"
+    service_delegation {
+      name = "Microsoft.DBforPostgreSQL/flexibleServers"
+      actions = [
+        "Microsoft.Network/virtualNetworks/subnets/join/action",
+      ]
+    }
+  }
+}
+
+# Create a private DNS zone for PostgreSQL
+resource "azurerm_private_dns_zone" "postgres" {
+  name                = "longlegs.postgres.database.azure.com"
+  resource_group_name = azurerm_resource_group.longlegs.name
+
+  tags = var.common_tags
+}
+
+# Link the DNS zone to the virtual network
+resource "azurerm_private_dns_zone_virtual_network_link" "postgres" {
+  name                  = "postgres-dns-link"
+  private_dns_zone_name = azurerm_private_dns_zone.postgres.name
+  resource_group_name   = azurerm_resource_group.longlegs.name
+  virtual_network_id    = azurerm_virtual_network.longlegs.id
+  registration_enabled  = true
+
+  tags = var.common_tags
+}
+
+# Create PostgreSQL Flexible Server
+resource "azurerm_postgresql_flexible_server" "longlegs" {
+  name                   = "longlegs-postgres"
+  resource_group_name    = azurerm_resource_group.longlegs.name
+  location               = azurerm_resource_group.longlegs.location
+  version                = "14"
+  delegated_subnet_id    = azurerm_subnet.postgres.id
+  private_dns_zone_id    = azurerm_private_dns_zone.postgres.id
+  
+  # Most cost-effective configuration
+  sku_name              = "B_Standard_B1ms"
+  storage_mb            = 32768 # Minimum storage (32GB)
+  
+  administrator_login    = "psqladmin"
+  administrator_password = random_password.postgres_password.result
+
+  # Disable public network access
+  public_network_access_enabled = false
+
+  depends_on = [
+    azurerm_private_dns_zone_virtual_network_link.postgres
+  ]
+
+  tags = var.common_tags
+}
+
+# Generate random password for PostgreSQL
+resource "random_password" "postgres_password" {
+  length           = 16
+  special          = true
+  override_special = "!#$%&*()-_=+[]{}<>:?"
+}
+
+# Store the PostgreSQL password in Key Vault
+resource "azurerm_key_vault_secret" "postgres_password" {
+  name         = "postgres-password"
+  value        = random_password.postgres_password.result
+  key_vault_id = azurerm_key_vault.longlegs.id
+
+  tags = var.common_tags
+
+  depends_on = [
+    azurerm_key_vault_access_policy.longlegs
+  ]
+}
+
+# Create a database in the PostgreSQL server
+resource "azurerm_postgresql_flexible_server_database" "longlegs" {
+  name      = "longlegs_db"
+  server_id = azurerm_postgresql_flexible_server.longlegs.id
+  charset   = "UTF8"
+  collation = "en_US.utf8"
+}
