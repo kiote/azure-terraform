@@ -1,0 +1,29 @@
+---
+- name: Create n8n directory
+  file:
+    path: /home/{{ ansible_user }}/k3s/n8n/
+    state: directory
+
+- name: Create n8n namespace file
+  template:
+    src: n8n_namespace.yml.j2
+    dest: /home/{{ ansible_user }}/k3s/n8n/namespace.yml
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
+- name: Retrieve postgres password from Azure Key Vault
+  set_fact:
+    postgres_password: "{{ lookup('azure.azcollection.azure_keyvault_secret', 'postgres-password', vault_url='https://{{ key_vault_name }}.vault.azure.net/') }}"
+
+- name: Create Kubernetes secret for Postgres password
+  kubernetes.core.k8s:
+    state: present
+    namespace: n8n
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: postgres-secret
+      type: Opaque
+      data:
+        password: "{{ postgres_password.value | b64encode }}"

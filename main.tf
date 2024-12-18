@@ -131,6 +131,11 @@ resource "azurerm_virtual_machine" "longlegs" {
       key_data = file("~/.ssh/id_ed25519.pub")
     }
   }
+
+  identity {
+    type         = "UserAssigned"
+    identity_ids = [azurerm_user_assigned_identity.n8n_identity.id]
+  }
 }
 
 resource "azurerm_key_vault" "longlegs" {
@@ -286,4 +291,25 @@ resource "azurerm_postgresql_flexible_server_database" "longlegs" {
   server_id = azurerm_postgresql_flexible_server.longlegs.id
   charset   = "UTF8"
   collation = "en_US.utf8"
+}
+
+# Create user assigned managed identity
+resource "azurerm_user_assigned_identity" "n8n_identity" {
+  name                = "n8n-managed-identity"
+  resource_group_name = azurerm_resource_group.main.name
+  location            = azurerm_resource_group.main.location
+}
+
+# Assign Key Vault Secrets User role to the managed identity
+resource "azurerm_role_assignment" "keyvault_role" {
+  scope                = azurerm_key_vault.main.id
+  role_definition_name = "Key Vault Secrets User"
+  principal_id         = azurerm_user_assigned_identity.n8n_identity.principal_id
+}
+
+# Assign the managed identity to the VM
+resource "azurerm_virtual_machine_identity" "n8n_vm_identity" {
+  virtual_machine_id = azurerm_linux_virtual_machine.main.id
+  identity_ids      = [azurerm_user_assigned_identity.n8n_identity.id]
+  type             = "UserAssigned"
 }
