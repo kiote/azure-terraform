@@ -54,27 +54,3 @@ resource "azurerm_role_assignment" "keyvault_role" {
   role_definition_id   = data.azurerm_role_definition.kv_secrets_user.id
   principal_id         = azurerm_user_assigned_identity.n8n_identity.principal_id
 }
-
-resource "null_resource" "copy_license_to_remote" {
-  provisioner "local-exec" {
-    command = <<EOT
-      echo "${base64decode(azurerm_key_vault_secret.license_file.value)}" > /tmp/pysmile_license.py
-    EOT
-  }
-
-  provisioner "file" {
-    source      = "/tmp/pysmile_license.py"
-    destination = "/tmp/pysmile_license.py"
-
-    connection {
-      type        = "ssh"
-      user        = var.ansible_user
-      private_key = file("~/.ssh/id_ed25519")
-      host        = azurerm_public_ip.longlegs.ip_address
-    }
-  }
-
-  depends_on = [
-    azurerm_key_vault_secret.license_file
-  ]
-}
