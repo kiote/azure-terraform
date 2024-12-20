@@ -52,28 +52,7 @@ az loing
 if that didn't work, you might need 
 
 ```
-az login --tenant <your tenant> --use-device-code
-```
-
-you also need to set some env vars so ansible would work:
-
-```
-export AZURE_TENANT_ID="your-tenant-id"
-export AZURE_CLIENT_ID="your-client-id"
-export AZURE_CLIENT_SECRET="your-client-secret"
-```
-
-you can get values from
-
-```
-az account show --query tenantId -o tsv
-az account show --query id -o tsv
-```
-
-Although, getting a secret is a bit more compicated:
-
-```
-az ad sp create-for-rbac --name "ansible-sp" --role "Key Vault Secrets User" --scopes "/subscriptions/<your-subscription-id>/resourceGroups/<your-resource-group>/providers/Microsoft.KeyVault/vaults/<your-keyvault-name>"
+az login --use-device-code
 ```
 
 
@@ -114,7 +93,29 @@ VM_PUBLIC_IP=$(terraform output -raw vm_public_ip)
 ansible-playbook -i "${VM_PUBLIC_IP}," -u adminuser --private-key=~/.ssh/id_ed25519 ansible/playbook.yml
 ```
 
+## Troubleshooting
+
+### Error when applying TF: Caller is not allowed to change permission model
+
+You need User Access Administrator role to manage key vault after that.
+
+You cannot assign the User Access Administrator role from Terraform when creating the resource group because Terraform requires elevated permissions to manage role assignments, and your current execution identity doesn't have the necessary privileges to perform this action within the same Terraform run. This creates a chicken-and-egg problem:
+
+Terraform needs elevated permissions (like User Access Administrator) to assign roles.
+Without these permissions, Terraform cannot assign the required roles to itself or other identities.
+
+```
+az role assignment create \
+  --assignee <OBJECT_ID> \
+  --role "User Access Administrator" \
+  --scope /subscriptions/<subscription-id>/resourceGroups/longlegs-resources
+```
+
+OBJECT_ID - your user object id from Entra ID (former AD). Entra ID -> Manage -> Users -> your user
+
 ### Debug with sidecar
+
+In case of different errors inside of the cluster, this sidecar can help a lot:
 
 ```
 kubectl debug -n <namespace> <pod-id> -it --image=nicolaka/netshoot --share-processes --copy-to=<namespace>-debug

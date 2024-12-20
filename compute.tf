@@ -24,7 +24,7 @@ resource "azurerm_virtual_machine" "longlegs" {
 
   os_profile {
     computer_name  = "longlegs-vm"
-    admin_username = "${var.ansible_user}"
+    admin_username = var.ansible_user
   }
 
   os_profile_linux_config {
@@ -48,10 +48,10 @@ resource "azurerm_user_assigned_identity" "n8n_identity" {
   location            = azurerm_resource_group.longlegs.location
 }
 
-# Assign Key Vault Secrets User role to the managed identity
+// Assign Key Vault Secrets User role to the managed identity
 resource "azurerm_role_assignment" "keyvault_role" {
   scope                = azurerm_key_vault.longlegs.id
-  role_definition_name = "Key Vault Secrets User"
+  role_definition_id   = data.azurerm_role_definition.kv_secrets_user.id
   principal_id         = azurerm_user_assigned_identity.n8n_identity.principal_id
 }
 

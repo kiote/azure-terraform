@@ -1,3 +1,4 @@
 ansible_user = "adminuser"
 path_to_license_file = "/home/someuser/license.lic"
 postgres_password = "str0nG_p4ssw0RD!"
+azure_user_object_id = "get it from azure entra ID"
