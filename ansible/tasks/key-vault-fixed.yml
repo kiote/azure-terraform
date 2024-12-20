@@ -29,7 +29,7 @@
 
 - name: Set license file fact
   set_fact:
-    license_file: "{{ keyvault_result.stdout }}"
+    license_file: "{{ keyvault_result.stdout | b64decode }}"
 
 - name: Fetch postgres password from Azure Key Vault using Python script
   command: >

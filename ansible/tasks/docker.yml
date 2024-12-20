@@ -1,23 +1,4 @@
 ---
-- name: install git
-  apt:
-    name: git
-    state: present
-
-- name: Clone git repo
-  git:
-    repo: "{{ git_repo_url }}"
-    dest: /home/{{ ansible_user }}/apps/{{ app_name }}
-    version: HEAD
-    force: yes
-  become: true
-  become_user: "{{ ansible_user }}"
-
-- name: Install Docker
-  apt:
-    name: docker.io
-    state: present
-
 - name: Add user to docker group
   user:
     name: "{{ ansible_user }}"
@@ -57,3 +38,8 @@
 - name: Import image to k3s
   shell: k3s ctr images import /home/{{ ansible_user }}/docker_images/{{ app_name }}.tar
   become: true
+- name: Add user to docker group
+  user:
+    name: "{{ ansible_user }}"
+    groups: docker
+    append: yes

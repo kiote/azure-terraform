@@ -4,19 +4,6 @@
     path: /home/{{ ansible_user }}/k3s/{{ app_name }}
     state: directory
 
-- name: Install cert manager
-  shell: |
-    kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.1/cert-manager.yaml
-  become: yes
-  become_user: "{{ ansible_user }}"
-
-- name: Create cert issuer for letsencrypt
-  template:
-    src: cert-issuer.yml.j2
-    dest: /home/{{ ansible_user }}/k3s/{{ app_name }}/cert-issuer.yml
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
-
 - name: Create Kubernetes namespace file
   template:
     src: namespace.yml.j2
@@ -50,8 +37,8 @@
   kubernetes.core.k8s:
     state: absent
     src: "/home/{{ ansible_user }}/k3s/{{ app_name }}/namespace.yml"
-  ignore_errors: yes
-  become: yes
+  ignore_errors: true
+  become: true
   become_user: "{{ ansible_user }}"
 
 - name: Wait for namespace deletion to complete
@@ -62,41 +49,34 @@
   until: namespace_check.failed or namespace_check.resources | length == 0
   retries: 30
   delay: 10
-  ignore_errors: yes
-  become: yes
+  ignore_errors: true
+  become: true
   become_user: "{{ ansible_user }}"
 
 - name: Apply Kubernetes namespace
   kubernetes.core.k8s:
     state: present
     src: "/home/{{ ansible_user }}/k3s/{{ app_name }}/namespace.yml"
-  become: yes
-  become_user: "{{ ansible_user }}"
-
-- name: Apply cert issuer
-  kubernetes.core.k8s:
-    state: present
-    src: "/home/{{ ansible_user }}/k3s/{{ app_name }}/cert-issuer.yml"
-  become: yes
+  become: true
   become_user: "{{ ansible_user }}"
 
 - name: Apply Kubernetes deployment
   kubernetes.core.k8s:
     state: present
     src: "/home/{{ ansible_user }}/k3s/{{ app_name }}/deployment.yml"
-  become: yes
+  become: true
   become_user: "{{ ansible_user }}"
 
 - name: Apply Kubernetes service
   kubernetes.core.k8s:
     state: present
     src: "/home/{{ ansible_user }}/k3s/{{ app_name }}/service.yml"
-  become: yes
+  become: true
   become_user: "{{ ansible_user }}"
 
 - name: Apply Kubernetes Ingress
   kubernetes.core.k8s:
     state: present
     src: "/home/{{ ansible_user }}/k3s/{{ app_name }}/ingress.yml"
-  become: yes
+  become: true
   become_user: "{{ ansible_user }}"
