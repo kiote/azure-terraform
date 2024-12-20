@@ -2,7 +2,6 @@
 # Potentially if you keep seeing
 # name 'DefaultAzureCredential' is not defined
 
----
 - name: Create Python script for fetching secret
   copy:
     content: |
