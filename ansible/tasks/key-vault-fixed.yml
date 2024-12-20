@@ -31,6 +31,17 @@
   set_fact:
     license_file: "{{ keyvault_result.stdout }}"
 
+- name: Fetch postgres password from Azure Key Vault using Python script
+  command: >
+    python3 /tmp/get_secret.py
+    "https://{{ key_vault_name }}.vault.azure.net/"
+    "postgres-password"
+  register: keyvault_result
+
+- name: Set postgres password fact
+  set_fact:
+    postgres_password: "{{ keyvault_result.stdout }}"
+
 - name: Write license file to destination
   copy:
     content: "{{ license_file }}"
