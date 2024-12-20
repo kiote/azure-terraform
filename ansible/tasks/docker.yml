@@ -1,31 +1,4 @@
 ---
-- name: install git
-  apt:
-    name: git
-    state: present
-
-- name: Clone git repo
-  git:
-    repo: "{{ git_repo_url }}"
-    dest: /home/{{ ansible_user }}/apps/{{ app_name }}
-    version: HEAD
-    force: yes
-  become: yes
-  become_user: "{{ ansible_user }}"
-
-- name: Copy license file
-  copy:
-    src: "/tmp/pysmile_license.py"
-    dest: /home/{{ ansible_user }}/apps/{{ app_name }}/pysmile_license.py
-    remote_src: yes
-  become: yes
-  become_user: "{{ ansible_user }}"
-
-- name: Install Docker
-  apt:
-    name: docker.io
-    state: present
-
 - name: Add user to docker group
   user:
     name: "{{ ansible_user }}"
@@ -39,7 +12,7 @@
 
 - name: Remove existing Docker image
   shell: docker rmi -f {{ docker_image_name }}:latest
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: Build Docker image
   shell: docker build -t {{ docker_image_name }}:latest /home/{{ ansible_user }}/apps/{{ app_name }}
@@ -53,15 +26,20 @@
     path: "/home/{{ ansible_user }}/docker_images"
     state: directory
     mode: '0755'
-  become: yes
+  become: true
   become_user: "{{ ansible_user }}"
 
 # Import local Docker image to k3s
 - name: Save Docker image to tar
   shell: docker save {{ docker_image_name }}:latest -o /home/{{ ansible_user }}/docker_images/{{ app_name }}.tar
-  become: yes
+  become: true
   become_user: "{{ ansible_user }}"
 
 - name: Import image to k3s
   shell: k3s ctr images import /home/{{ ansible_user }}/docker_images/{{ app_name }}.tar
-  become: yes
+  become: true
+- name: Add user to docker group
+  user:
+    name: "{{ ansible_user }}"
+    groups: docker
+    append: yes

@@ -52,7 +52,7 @@ az loing
 if that didn't work, you might need 
 
 ```
-az login --tenant <your tenant> --use-device-code
+az login --use-device-code
 ```
 
 
@@ -65,10 +65,9 @@ terraform apply -var-file="main.tfvars"
 ### Install ansible
 
 ```
-sudo apt update
-sudo apt install software-properties-common
-sudo add-apt-repository --yes --update ppa:ansible/ansible
-sudo apt install ansible
+python3 -m venv ~/ansible-venv
+source ~/ansible-venv/bin/activate
+pip install ansible
 ```
 
 In case of problems, check the latest installation procedures [here](https://docs.ansible.com/ansible/latest/installation_guide/installation_distros.html#installing-ansible-on-ubuntu)
@@ -83,6 +82,7 @@ In case of problems, check the latest installation procedures [here](https://doc
 
 ```
 ansible-galaxy collection install -r ansible/requirements.yml
+pip install -r ~/.ansible/collections/ansible_collections/azure/azcollection/requirements-azure.txt
 ```
 
 ### Run Ansible playbook
@@ -93,7 +93,35 @@ VM_PUBLIC_IP=$(terraform output -raw vm_public_ip)
 ansible-playbook -i "${VM_PUBLIC_IP}," -u adminuser --private-key=~/.ssh/id_ed25519 ansible/playbook.yml
 ```
 
+## Troubleshooting
+
+### Error when applying TF: Caller is not allowed to change permission model
+
+You need User Access Administrator role to manage key vault after that.
+
+You cannot assign the User Access Administrator role from Terraform when creating the resource group because Terraform requires elevated permissions to manage role assignments, and your current execution identity doesn't have the necessary privileges to perform this action within the same Terraform run. This creates a chicken-and-egg problem:
+
+Terraform needs elevated permissions (like User Access Administrator) to assign roles.
+Without these permissions, Terraform cannot assign the required roles to itself or other identities.
+
+```
+az role assignment create \
+  --assignee <OBJECT_ID> \
+  --role "User Access Administrator" \
+  --scope /subscriptions/<subscription-id>/resourceGroups/<rg-name>
+```
+
+OBJECT_ID - your user object id from Entra ID (former AD). Entra ID -> Manage -> Users -> your user
+
+### Secret already exists, need to import to terraform
+
+```
+terraform import azurerm_key_vault_secret.<secret-name> https://<vault>.vault.azure.net/secrets/<secret-name>/<version>
+```
+
 ### Debug with sidecar
+
+In case of different errors inside of the cluster, this sidecar can help a lot:
 
 ```
 kubectl debug -n <namespace> <pod-id> -it --image=nicolaka/netshoot --share-processes --copy-to=<namespace>-debug

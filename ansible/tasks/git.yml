@@ -1,0 +1,19 @@
+---
+- name: install git
+  apt:
+    name: git
+    state: present
+
+- name: Clone git repo
+  git:
+    repo: "{{ git_repo_url }}"
+    dest: /home/{{ ansible_user }}/apps/{{ app_name }}
+    version: HEAD
+    force: yes
+  become: true
+  become_user: "{{ ansible_user }}"
+
+- name: Install Docker
+  apt:
+    name: docker.io
+    state: present

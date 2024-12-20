@@ -1,0 +1,57 @@
+---
+# Potentially if you keep seeing
+# name 'DefaultAzureCredential' is not defined
+
+- name: Create Python script for fetching secret
+  copy:
+    content: |
+      from azure.identity import DefaultAzureCredential
+      from azure.keyvault.secrets import SecretClient
+      import sys
+      
+      vault_url = sys.argv[1]
+      secret_name = sys.argv[2]
+      
+      credential = DefaultAzureCredential()
+      client = SecretClient(vault_url=vault_url, credential=credential)
+      secret = client.get_secret(secret_name)
+      print(secret.value)
+    dest: /tmp/get_secret.py
+    mode: '0644'
+  become: true
+
+- name: Fetch license file from Azure Key Vault using Python script
+  command: >
+    python3 /tmp/get_secret.py 
+    "https://{{ key_vault_name }}.vault.azure.net/"
+    "license-file"
+  register: keyvault_result
+
+- name: Set license file fact
+  set_fact:
+    license_file: "{{ keyvault_result.stdout | b64decode }}"
+
+- name: Fetch postgres password from Azure Key Vault using Python script
+  command: >
+    python3 /tmp/get_secret.py
+    "https://{{ key_vault_name }}.vault.azure.net/"
+    "postgres-password"
+  register: keyvault_result
+
+- name: Set postgres password fact
+  set_fact:
+    postgres_password: "{{ keyvault_result.stdout }}"
+
+- name: Write license file to destination
+  copy:
+    content: "{{ license_file }}"
+    dest: "/home/{{ ansible_user }}/apps/{{ app_name }}/pysmile_license.py"
+    mode: '0644'
+    owner: "{{ ansible_user }}"
+  become: true
+
+- name: Clean up temporary Python script
+  file:
+    path: /tmp/get_secret.py
+    state: absent
+  become: true
