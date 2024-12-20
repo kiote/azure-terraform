@@ -108,10 +108,16 @@ Without these permissions, Terraform cannot assign the required roles to itself 
 az role assignment create \
   --assignee <OBJECT_ID> \
   --role "User Access Administrator" \
-  --scope /subscriptions/<subscription-id>/resourceGroups/longlegs-resources
+  --scope /subscriptions/<subscription-id>/resourceGroups/<rg-name>
 ```
 
 OBJECT_ID - your user object id from Entra ID (former AD). Entra ID -> Manage -> Users -> your user
+
+### Secret already exists, need to import to terraform
+
+```
+terraform import azurerm_key_vault_secret.<secret-name> https://<vault>.vault.azure.net/secrets/<secret-name>/<version>
+```
 
 ### Debug with sidecar
 

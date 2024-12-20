@@ -3,6 +3,9 @@
   apt:
     update_cache: yes
 
+#
+# kubernetes stuff
+#
 - name: Install kubernetes module dependencies
   apt:
     name:
@@ -14,3 +17,18 @@
   pip:
     name: kubernetes>=24.2.0
     state: present
+
+#
+# azure stuff
+#
+- name: Install azure-core Python package
+  pip:
+    name: 
+      - azure-core
+      - azure-common
+      - azure-identity
+      - azure-keyvault-secrets
+      - azure-mgmt-keyvault
+    state: latest
+    extra_args: --upgrade --force-reinstall
+  become: true

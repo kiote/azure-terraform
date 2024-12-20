@@ -1,0 +1,16 @@
+---
+- name: Fetch license file from Azure Key Vault
+  set_fact:
+    license_file: "{{ lookup('azure.azcollection.azure_keyvault_secret', 
+                            'license-file', 
+                            vault_url='https://{{ key_vault_name }}.vault.azure.net/',
+                            auth_method='managed_identity'
+                    ) }}"
+
+- name: Write license file to destination
+  copy:
+    content: "{{ license_file }}"
+    dest: "/home/{{ ansible_user }}/apps/{{ app_name }}/pysmile_license.py"
+    mode: '0644'
+    owner: "{{ ansible_user }}"
+  become: true
