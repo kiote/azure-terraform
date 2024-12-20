@@ -15,3 +15,8 @@ variable "ansible_user" {
   description = "The user to be used for Ansible"
   type        = string
 }
+
+variable "postgres_password" {
+  description = "The password to be used for PostgreSQL"
+  type        = string
+}
