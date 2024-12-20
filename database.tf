@@ -55,6 +55,11 @@ resource "azurerm_postgresql_flexible_server" "longlegs" {
   # Disable public network access
   public_network_access_enabled = false
 
+  authentication {
+    password_auth_enabled = true
+    active_directory_auth_enabled = false
+  }
+
   depends_on = [
     azurerm_private_dns_zone_virtual_network_link.postgres
   ]
@@ -68,4 +73,24 @@ resource "azurerm_postgresql_flexible_server_database" "longlegs" {
   server_id = azurerm_postgresql_flexible_server.longlegs.id
   charset   = "UTF8"
   collation = "en_US.utf8"
+}
+
+resource "azurerm_postgresql_flexible_server_firewall_rule" "k8s" {
+  name                = "allow-k8s-subnet"
+  server_id          = azurerm_postgresql_flexible_server.longlegs.id
+  start_ip_address   = cidrhost(var.kubernetes_subnet_cidr, 0)    # First IP in k8s subnet
+  end_ip_address     = cidrhost(var.kubernetes_subnet_cidr, -1)   # Last IP in k8s subnet
+}
+
+# Configure PostgreSQL server parameters including access rules
+resource "azurerm_postgresql_flexible_server_configuration" "postgres_config" {
+  server_id = azurerm_postgresql_flexible_server.longlegs.id
+  name      = "ssl_min_protocol_version"
+  value     = "TLSv1.2"  # Using the minimum supported version
+}
+
+resource "azurerm_postgresql_flexible_server_configuration" "allow_subnet_access" {
+  server_id = azurerm_postgresql_flexible_server.longlegs.id
+  name      = "pgaudit.log"
+  value     = "all"
 }

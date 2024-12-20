@@ -74,24 +74,39 @@ resource "azurerm_network_security_group" "longlegs" {
     destination_address_prefix = "*"
   }
 
-  // to allow letsencrypt to validate and renew the certificate
-  security_rule {
-    name                       = "allow-http"
-    priority                   = 1003
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "80"
-    source_address_prefix      = "*"
-    destination_address_prefix = "*"
-  }
-
-
   tags = var.common_tags
 }
 
 resource "azurerm_network_interface_security_group_association" "longlegs" {
   network_interface_id      = azurerm_network_interface.longlegs.id
   network_security_group_id = azurerm_network_security_group.longlegs.id
+}
+
+# Add network security group rule to allow PostgreSQL traffic
+resource "azurerm_network_security_rule" "postgres" {
+  name                        = "allow-postgres"
+  priority                    = 100
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range          = "*"
+  destination_port_range     = "5432"
+  source_address_prefix      = var.kubernetes_subnet_cidr
+  destination_address_prefix = azurerm_subnet.postgres.address_prefixes[0]
+  resource_group_name        = azurerm_resource_group.longlegs.name
+  network_security_group_name = azurerm_network_security_group.postgres.name
+}
+
+# Create NSG for PostgreSQL subnet if you haven't already
+resource "azurerm_network_security_group" "postgres" {
+  name                = "postgres-nsg"
+  location            = azurerm_resource_group.longlegs.location
+  resource_group_name = azurerm_resource_group.longlegs.name
+  tags                = var.common_tags
+}
+
+# Associate NSG with PostgreSQL subnet
+resource "azurerm_subnet_network_security_group_association" "postgres" {
+  subnet_id                 = azurerm_subnet.postgres.id
+  network_security_group_id = azurerm_network_security_group.postgres.id
 }

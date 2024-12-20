@@ -1,57 +1,50 @@
 ---
-- name: Create n8n directory
-  file:
-    path: /home/{{ ansible_user }}/k3s/n8n/
-    state: directory
+# - name: Create n8n directory
+#   file:
+#     path: /home/{{ ansible_user }}/k3s/n8n/
+#     state: directory
 
-- name: Create n8n namespace file
-  template:
-    src: n8n_namespace.yml.j2
-    dest: /home/{{ ansible_user }}/k3s/n8n/namespace.yml
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
+# - name: Create n8n namespace file
+#   template:
+#     src: n8n_namespace.yml.j2
+#     dest: /home/{{ ansible_user }}/k3s/n8n/namespace.yml
+#     owner: "{{ ansible_user }}"
+#     group: "{{ ansible_user }}"
 
-- name: Create Kubernetes secret for Postgres password
-  template:
-    src: n8n_postgres_secret.yml.j2
-    dest: /home/{{ ansible_user }}/k3s/n8n/postgres_secret.yml
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"  
+# - name: Create Kubernetes secret for Postgres password
+#   template:
+#     src: n8n_postgres_secret.yml.j2
+#     dest: /home/{{ ansible_user }}/k3s/n8n/postgres_secret.yml
+#     owner: "{{ ansible_user }}"
+#     group: "{{ ansible_user }}"  
 
-- name: Create n8n configmap file
-  template:
-    src: n8n_configmap.yml.j2
-    dest: /home/{{ ansible_user }}/k3s/n8n/configmap.yml
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
+# - name: Create n8n configmap file
+#   template:
+#     src: n8n_configmap.yml.j2
+#     dest: /home/{{ ansible_user }}/k3s/n8n/configmap.yml
+#     owner: "{{ ansible_user }}"
+#     group: "{{ ansible_user }}"
 
-- name: Create postgres service file
-  template:
-    src: n8n_postgres_service.yml.j2
-    dest: /home/{{ ansible_user }}/k3s/n8n/postgres_service.yml
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
+# - name: Create postgres service file
+#   template:
+#     src: n8n_postgres_service.yml.j2
+#     dest: /home/{{ ansible_user }}/k3s/n8n/postgres_service.yml
+#     owner: "{{ ansible_user }}"
+#     group: "{{ ansible_user }}"
 
-- name: Create postgres testing file
-  template:
-    src: n8n_postgres_test.yml.j2
-    dest: /home/{{ ansible_user }}/k3s/n8n/postgres_test.yml
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
+# - name: Create persistent volume file
+#   template:
+#     src: n8n_persistent_volume.yml.j2
+#     dest: /home/{{ ansible_user }}/k3s/n8n/persistent_volume.yml
+#     owner: "{{ ansible_user }}"
+#     group: "{{ ansible_user }}"
 
-- name: Create persistent volume file
-  template:
-    src: n8n_persistent_volume.yml.j2
-    dest: /home/{{ ansible_user }}/k3s/n8n/persistent_volume.yml
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
-
-- name: Create persistent volume claim file
-  template:
-    src: n8n_pvc.yml.j2
-    dest: /home/{{ ansible_user }}/k3s/n8n/pvc.yml
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
+# - name: Create persistent volume claim file
+#   template:
+#     src: n8n_pvc.yml.j2
+#     dest: /home/{{ ansible_user }}/k3s/n8n/pvc.yml
+#     owner: "{{ ansible_user }}"
+#     group: "{{ ansible_user }}"
 
 - name: Create n8n deployment file
   template:
@@ -60,51 +53,79 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
 
-- name: Apply n8n namespace
-  kubernetes.core.k8s:
-    state: present
-    src: /home/{{ ansible_user }}/k3s/n8n/namespace.yml
-  become: true
-  become_user: "{{ ansible_user }}"
+- name: Create n8n service file
+  template:
+    src: n8n_service.yml.j2
+    dest: /home/{{ ansible_user }}/k3s/n8n/service.yml
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
 
-- name: Apply Kubernetes secret for Postgres password
-  kubernetes.core.k8s:
-    state: present
-    src: /home/{{ ansible_user }}/k3s/n8n/postgres_secret.yml
-  become: true
-  become_user: "{{ ansible_user }}"
+- name: Create n8n ingress file
+  template:
+    src: n8n_ingress.yml.j2
+    dest: /home/{{ ansible_user }}/k3s/n8n/ingress.yml
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
 
-- name: Apply n8n configmap
-  kubernetes.core.k8s:
-    state: present
-    src: /home/{{ ansible_user }}/k3s/n8n/configmap.yml
-  become: true
-  become_user: "{{ ansible_user }}"
+# - name: Apply n8n namespace
+#   kubernetes.core.k8s:
+#     state: present
+#     src: /home/{{ ansible_user }}/k3s/n8n/namespace.yml
+#   become: true
+#   become_user: "{{ ansible_user }}"
 
-- name: Apply postgres service
-  kubernetes.core.k8s:
-    state: present
-    src: /home/{{ ansible_user }}/k3s/n8n/postgres_service.yml
-  become: true
-  become_user: "{{ ansible_user }}"
+# - name: Apply Kubernetes secret for Postgres password
+#   kubernetes.core.k8s:
+#     state: present
+#     src: /home/{{ ansible_user }}/k3s/n8n/postgres_secret.yml
+#   become: true
+#   become_user: "{{ ansible_user }}"
 
-- name: Apply PV for n8n
-  kubernetes.core.k8s:
-    state: present
-    src: /home/{{ ansible_user }}/k3s/n8n/persistent_volume.yml
-  become: true
-  become_user: "{{ ansible_user }}"
+# - name: Apply n8n configmap
+#   kubernetes.core.k8s:
+#     state: present
+#     src: /home/{{ ansible_user }}/k3s/n8n/configmap.yml
+#   become: true
+#   become_user: "{{ ansible_user }}"
 
-- name: Apply PVC for n8n
-  kubernetes.core.k8s:
-    state: present
-    src: /home/{{ ansible_user }}/k3s/n8n/pvc.yml
-  become: true
-  become_user: "{{ ansible_user }}"
+# - name: Apply postgres service
+#   kubernetes.core.k8s:
+#     state: present
+#     src: /home/{{ ansible_user }}/k3s/n8n/postgres_service.yml
+#   become: true
+#   become_user: "{{ ansible_user }}"
+
+# - name: Apply PV for n8n
+#   kubernetes.core.k8s:
+#     state: present
+#     src: /home/{{ ansible_user }}/k3s/n8n/persistent_volume.yml
+#   become: true
+#   become_user: "{{ ansible_user }}"
+
+# - name: Apply PVC for n8n
+#   kubernetes.core.k8s:
+#     state: present
+#     src: /home/{{ ansible_user }}/k3s/n8n/pvc.yml
+#   become: true
+#   become_user: "{{ ansible_user }}"
 
 - name: Apply n8n deployment
   kubernetes.core.k8s:
     state: present
     src: /home/{{ ansible_user }}/k3s/n8n/deployment.yml
+  become: true
+  become_user: "{{ ansible_user }}"
+
+- name: Apply n8n service
+  kubernetes.core.k8s:
+    state: present
+    src: /home/{{ ansible_user }}/k3s/n8n/service.yml
+  become: true
+  become_user: "{{ ansible_user }}"
+
+- name: Apply n8n ingress
+  kubernetes.core.k8s:
+    state: present
+    src: /home/{{ ansible_user }}/k3s/n8n/ingress.yml
   become: true
   become_user: "{{ ansible_user }}"

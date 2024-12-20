@@ -14,8 +14,15 @@ spec:
         app: n8n
     spec:
       securityContext:
-        fsGroup: 1001
-        runAsUser: 1001
+        fsGroup: 1000
+        runAsUser: 1000
+      initContainers:
+        - name: volume-permissions
+          image: busybox
+          command: ["sh", "-c", "mkdir -p /home/node/.n8n && chown -R 1000:1000 /home/node/.n8n"]
+          volumeMounts:
+            - name: n8n-data
+              mountPath: /home/node/.n8n
       containers:
       - name: n8n
         image: n8nio/n8n
@@ -30,6 +37,8 @@ spec:
             secretKeyRef:
               name: n8n-postgres-secret
               key: postgres-password
+        - name: N8N_PORT
+          value: "5678"     # Add this explicit port setting
         volumeMounts:
         - name: n8n-data
           mountPath: /home/node/.n8n
