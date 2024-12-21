@@ -14,6 +14,8 @@ resource "azurerm_subnet" "postgres" {
       ]
     }
   }
+
+  service_endpoints = ["Microsoft.Storage"]
 }
 
 # Create a private DNS zone for PostgreSQL
@@ -30,7 +32,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "postgres" {
   private_dns_zone_name = azurerm_private_dns_zone.postgres.name
   resource_group_name   = azurerm_resource_group.longlegs.name
   virtual_network_id    = azurerm_virtual_network.longlegs.id
-  registration_enabled  = true
+  registration_enabled  = false
 
   tags = var.common_tags
 }
@@ -94,3 +96,19 @@ resource "azurerm_postgresql_flexible_server_configuration" "allow_subnet_access
   name      = "pgaudit.log"
   value     = "all"
 }
+
+resource "azurerm_postgresql_flexible_server_firewall_rule" "k3s_pods" {
+  name             = "allow-k3s-pods"
+  server_id        = azurerm_postgresql_flexible_server.longlegs.id
+  start_ip_address = "10.42.0.0"  # Adjust based on your k3s pod CIDR
+  end_ip_address   = "10.42.255.255"
+}
+
+resource "azurerm_private_dns_a_record" "postgres_a_record" {
+  name                = "longlegs-postgres"
+  zone_name           = azurerm_private_dns_zone.postgres.name
+  resource_group_name = azurerm_resource_group.longlegs.name
+  ttl                 = 300
+  records             = [azurerm_postgresql_flexible_server.longlegs.fqdn]
+}
+

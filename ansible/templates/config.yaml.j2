@@ -1,5 +1,7 @@
 write-kubeconfig-mode: "644"
 docker: false
+cluster-dns: ["168.63.129.16"]
+resolv-conf: "/run/systemd/resolve/resolv.conf"
 containerd-config-template: |
 [plugins.opt]
     path = "/var/lib/rancher/k3s/agent/containerd"
