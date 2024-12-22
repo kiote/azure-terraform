@@ -48,6 +48,8 @@ spec:
           value: "/etc/ssl/certs/ca-certificates.crt"
         - name: DB_POSTGRESDB_SSL_REJECT_UNAUTHORIZED
           value: "false"
+        - name: WEBHOOK_URL
+          value: "https://n8n.{{ app_domain }}"
         volumeMounts:
         - name: n8n-data
           mountPath: /home/node/.n8n
