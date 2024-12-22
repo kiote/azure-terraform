@@ -4,8 +4,8 @@
   vars_files:
     - vars.yml
   tasks:
-    # - include_tasks: tasks/system.yml
-    # - include_tasks: tasks/k3s.yml
+    - include_tasks: tasks/system.yml
+    - include_tasks: tasks/k3s.yml
     # - include_tasks: tasks/git.yml
     # - include_tasks: tasks/key-vault-fixed.yml
     # - include_tasks: tasks/docker.yml

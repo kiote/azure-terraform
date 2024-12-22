@@ -58,3 +58,23 @@
     force: yes
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
+
+- name: Generate CoreDNS updated YAML from template
+  ansible.builtin.template:
+    src: coredns.yml.j2
+    dest: /tmp/coredns-updated.yaml
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0644'
+
+- name: Apply the updated CoreDNS ConfigMap
+  ansible.builtin.command:
+    cmd: kubectl apply -f /tmp/coredns-updated.yaml
+  register: apply_result
+  failed_when: apply_result.rc != 0
+  become: true
+  become_user: "{{ ansible_user }}"
+
+- name: Restart CoreDNS Pods
+  ansible.builtin.command:
+    cmd: kubectl -n kube-system rollout restart deployment coredns
