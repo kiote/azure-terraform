@@ -44,6 +44,10 @@ spec:
               key: postgres-password
         - name: N8N_PORT
           value: "5678"     # Add this explicit port setting
+        - name: DB_POSTGRESDB_SSL_CA
+          value: "/etc/ssl/certs/ca-certificates.crt"
+        - name: DB_POSTGRESDB_SSL_REJECT_UNAUTHORIZED
+          value: "false"
         volumeMounts:
         - name: n8n-data
           mountPath: /home/node/.n8n
