@@ -18,12 +18,12 @@
 #     owner: "{{ ansible_user }}"
 #     group: "{{ ansible_user }}"  
 
-# - name: Create n8n configmap file
-#   template:
-#     src: n8n_configmap.yml.j2
-#     dest: /home/{{ ansible_user }}/k3s/n8n/configmap.yml
-#     owner: "{{ ansible_user }}"
-#     group: "{{ ansible_user }}"
+- name: Create n8n configmap file
+  template:
+    src: n8n_configmap.yml.j2
+    dest: /home/{{ ansible_user }}/k3s/n8n/configmap.yml
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
 
 - name: Create postgres service file
   template:
@@ -81,12 +81,12 @@
 #   become: true
 #   become_user: "{{ ansible_user }}"
 
-# - name: Apply n8n configmap
-#   kubernetes.core.k8s:
-#     state: present
-#     src: /home/{{ ansible_user }}/k3s/n8n/configmap.yml
-#   become: true
-#   become_user: "{{ ansible_user }}"
+- name: Apply n8n configmap
+  kubernetes.core.k8s:
+    state: present
+    src: /home/{{ ansible_user }}/k3s/n8n/configmap.yml
+  become: true
+  become_user: "{{ ansible_user }}"
 
 - name: Apply postgres service
   kubernetes.core.k8s:
