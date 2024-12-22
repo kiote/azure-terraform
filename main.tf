@@ -11,9 +11,6 @@ resource "azurerm_virtual_network" "longlegs" {
   location            = azurerm_resource_group.longlegs.location
   resource_group_name = azurerm_resource_group.longlegs.name
 
-  # Add Azure-provided DNS server
-  dns_servers         = ["168.63.129.16"]
-
   tags = var.common_tags
 }
 
@@ -36,17 +33,14 @@ resource "azurerm_network_interface" "longlegs" {
     public_ip_address_id          = azurerm_public_ip.longlegs.id
   }
 
-  # Add Azure-provided DNS server
-  dns_servers         = ["168.63.129.16"]
-
   tags = var.common_tags
 }
 
 resource "azurerm_public_ip" "longlegs" {
-  name                = "longlegs-pip"
-  location            = azurerm_resource_group.longlegs.location
-  resource_group_name = azurerm_resource_group.longlegs.name
-  allocation_method   = "Dynamic"
+  name                    = "longlegs-pip"
+  location                = azurerm_resource_group.longlegs.location
+  resource_group_name     = azurerm_resource_group.longlegs.name
+  allocation_method       = "Dynamic"
   idle_timeout_in_minutes = 4
 
   tags = var.common_tags
@@ -96,11 +90,11 @@ resource "azurerm_network_security_rule" "postgres" {
   direction                   = "Inbound"
   access                      = "Allow"
   protocol                    = "Tcp"
-  source_port_range          = "*"
-  destination_port_range     = "5432"
-  source_address_prefix      = var.kubernetes_subnet_cidr
-  destination_address_prefix = azurerm_subnet.postgres.address_prefixes[0]
-  resource_group_name        = azurerm_resource_group.longlegs.name
+  source_port_range           = "*"
+  destination_port_range      = "5432"
+  source_address_prefix       = var.kubernetes_subnet_cidr
+  destination_address_prefix  = azurerm_subnet.postgres.address_prefixes[0]
+  resource_group_name         = azurerm_resource_group.longlegs.name
   network_security_group_name = azurerm_network_security_group.postgres.name
 }
 

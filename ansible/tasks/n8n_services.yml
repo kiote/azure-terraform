@@ -25,12 +25,12 @@
 #     owner: "{{ ansible_user }}"
 #     group: "{{ ansible_user }}"
 
-# - name: Create postgres service file
-#   template:
-#     src: n8n_postgres_service.yml.j2
-#     dest: /home/{{ ansible_user }}/k3s/n8n/postgres_service.yml
-#     owner: "{{ ansible_user }}"
-#     group: "{{ ansible_user }}"
+- name: Create postgres service file
+  template:
+    src: n8n_postgres_service.yml.j2
+    dest: /home/{{ ansible_user }}/k3s/n8n/postgres_service.yml
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
 
 # - name: Create persistent volume file
 #   template:
@@ -88,12 +88,12 @@
 #   become: true
 #   become_user: "{{ ansible_user }}"
 
-# - name: Apply postgres service
-#   kubernetes.core.k8s:
-#     state: present
-#     src: /home/{{ ansible_user }}/k3s/n8n/postgres_service.yml
-#   become: true
-#   become_user: "{{ ansible_user }}"
+- name: Apply postgres service
+  kubernetes.core.k8s:
+    state: present
+    src: /home/{{ ansible_user }}/k3s/n8n/postgres_service.yml
+  become: true
+  become_user: "{{ ansible_user }}"
 
 # - name: Apply PV for n8n
 #   kubernetes.core.k8s:

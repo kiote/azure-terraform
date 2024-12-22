@@ -25,5 +25,10 @@ variable "kubernetes_subnet_cidr" {
   description = "CIDR range for Kubernetes subnet"
   type        = string
   # This should match your AKS subnet CIDR
-  default     = "10.0.2.0/24"  # Adjust based on your k8s subnet
+  default = "10.0.2.0/24" # Adjust based on your k8s subnet
+}
+
+variable "vm_public_ip" {
+  description = "Public IP address of the VM"
+  type        = string
 }

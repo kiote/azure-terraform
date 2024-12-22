@@ -26,16 +26,16 @@ resource "azurerm_key_vault_secret" "license_file" {
 
 # Assign Key Vault Contributor role to the Terraform execution identity
 resource "azurerm_role_assignment" "terraform_keyvault_contributor" {
-  scope                = azurerm_key_vault.longlegs.id
-  role_definition_id   = data.azurerm_role_definition.kv_contributor.id
-  principal_id         = data.azurerm_client_config.current.object_id
+  scope              = azurerm_key_vault.longlegs.id
+  role_definition_id = data.azurerm_role_definition.kv_contributor.id
+  principal_id       = data.azurerm_client_config.current.object_id
 }
 
 # Assign Key Vault Secrets User role to the Terraform execution identity
 resource "azurerm_role_assignment" "terraform_keyvault_secrets_user" {
-  scope                = azurerm_key_vault.longlegs.id
-  role_definition_id   = data.azurerm_role_definition.kv_secrets_user.id
-  principal_id         = data.azurerm_client_config.current.object_id
+  scope              = azurerm_key_vault.longlegs.id
+  role_definition_id = data.azurerm_role_definition.kv_secrets_user.id
+  principal_id       = data.azurerm_client_config.current.object_id
 }
 
 # Store the PostgreSQL password in Key Vault
