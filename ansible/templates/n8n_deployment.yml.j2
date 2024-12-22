@@ -14,8 +14,20 @@ spec:
         app: n8n
     spec:
       securityContext:
-        fsGroup: 1001
-        runAsUser: 1001
+        fsGroup: 1000
+        runAsUser: 1000
+      initContainers:
+        - name: volume-permissions
+          image: busybox
+          command: ["sh", "-c", "mkdir -p /home/node/.n8n && touch /home/node/.n8n/config && chmod 600 /home/node/.n8n/config && chown -R 1000:1000 /home/node/.n8n"]
+          volumeMounts:
+            - name: n8n-data
+              mountPath: /home/node/.n8n
+      dnsPolicy: None # Allows custom DNS configuration
+      dnsConfig:
+        nameservers:
+        - 8.8.8.8
+        - 8.8.4.4
       containers:
       - name: n8n
         image: n8nio/n8n
@@ -30,6 +42,12 @@ spec:
             secretKeyRef:
               name: n8n-postgres-secret
               key: postgres-password
+        - name: N8N_PORT
+          value: "5678"     # Add this explicit port setting
+        - name: DB_POSTGRESDB_SSL_CA
+          value: "/etc/ssl/certs/ca-certificates.crt"
+        - name: DB_POSTGRESDB_SSL_REJECT_UNAUTHORIZED
+          value: "false"
         volumeMounts:
         - name: n8n-data
           mountPath: /home/node/.n8n

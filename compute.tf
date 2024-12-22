@@ -50,7 +50,7 @@ resource "azurerm_user_assigned_identity" "n8n_identity" {
 
 // Assign Key Vault Secrets User role to the managed identity
 resource "azurerm_role_assignment" "keyvault_role" {
-  scope                = azurerm_key_vault.longlegs.id
-  role_definition_id   = data.azurerm_role_definition.kv_secrets_user.id
-  principal_id         = azurerm_user_assigned_identity.n8n_identity.principal_id
+  scope              = azurerm_key_vault.longlegs.id
+  role_definition_id = data.azurerm_role_definition.kv_secrets_user.id
+  principal_id       = azurerm_user_assigned_identity.n8n_identity.principal_id
 }
