@@ -3,7 +3,15 @@ kind: Ingress
 metadata:
   name: n8n-ingress
   namespace: n8n
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-issuer"
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
 spec:
+  tls:
+    - hosts:
+        - n8n.{{ app_domain }}
+      secretName: n8n-tls
   ingressClassName: traefik
   rules:
     - host: n8n.{{ app_domain }}

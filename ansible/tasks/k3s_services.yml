@@ -4,6 +4,19 @@
     path: /home/{{ ansible_user }}/k3s/{{ app_name }}
     state: directory
 
+- name: Install cert manager
+  shell: |
+    kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.1/cert-manager.yaml
+  become: true
+  become_user: "{{ ansible_user }}"
+
+- name: Create cert issuer for letsencrypt
+  template:
+    src: cert-issuer.yml.j2
+    dest: /home/{{ ansible_user }}/k3s/{{ app_name }}/cert-issuer.yml
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
 - name: Create Kubernetes namespace file
   template:
     src: namespace.yml.j2
@@ -78,5 +91,12 @@
   kubernetes.core.k8s:
     state: present
     src: "/home/{{ ansible_user }}/k3s/{{ app_name }}/ingress.yml"
+  become: true
+  become_user: "{{ ansible_user }}"
+
+- name: Apply cert issuer for letsencrypt
+  kubernetes.core.k8s:
+    state: present
+    src: "/home/{{ ansible_user }}/k3s/{{ app_name }}/cert-issuer.yml"
   become: true
   become_user: "{{ ansible_user }}"
