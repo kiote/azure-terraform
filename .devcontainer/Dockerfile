@@ -18,6 +18,7 @@ RUN pip install --no-cache-dir ansible
 
 # Optional: Install additional Ansible plugins or tools (e.g., Ansible Lint)
 RUN pip install --no-cache-dir ansible-lint
+RUN ansible --version
 
 # Copy any required files from the host to the container (e.g., playbooks, inventory)
 # Uncomment the line below and customize the source/destination if needed
