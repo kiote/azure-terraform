@@ -1,0 +1,22 @@
+{
+    "name": "Azure Terraform Devcontainer",
+    "build": {
+      "dockerfile": "Dockerfile"
+    },
+    "workspaceFolder": "/workspace",
+    "customizations": {
+      "vscode": {
+        "extensions": [
+          "ms-azuretools.vscode-docker",
+          "redhat.ansible",
+          "editorconfig.editorconfig"
+        ]
+      }
+    },
+    "postCreateCommand": "ansible --version",
+    "remoteUser": "root",
+    "mounts": [
+      "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached"
+    ]
+  }
+  
