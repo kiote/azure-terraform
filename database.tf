@@ -8,7 +8,7 @@ resource "azurerm_subnet" "postgres" {
 }
 
 resource "azurerm_postgresql_flexible_server" "longlegs" {
-  name                = "n8n-longlegs-postgres"
+  name                = "n8n-${var.resource_prefix}-postgres"
   resource_group_name = azurerm_resource_group.longlegs.name
   location            = azurerm_resource_group.longlegs.location
   version             = "16"
@@ -33,7 +33,7 @@ resource "azurerm_postgresql_flexible_server" "longlegs" {
 
 # Create a database in the PostgreSQL server
 resource "azurerm_postgresql_flexible_server_database" "longlegs" {
-  name      = "longlegs_db"
+  name      = "${var.resource_prefix}_db"
   server_id = azurerm_postgresql_flexible_server.longlegs.id
   charset   = "UTF8"
   collation = "en_US.utf8"

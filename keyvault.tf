@@ -1,5 +1,5 @@
 resource "azurerm_key_vault" "longlegs" {
-  name                = "longlegs-keyvault"
+  name                = "${var.resource_prefix}-keyvault"
   location            = azurerm_resource_group.longlegs.location
   resource_group_name = azurerm_resource_group.longlegs.name
   tenant_id           = data.azurerm_client_config.current.tenant_id

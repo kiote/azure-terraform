@@ -8,6 +8,7 @@ ansible_user: "adminuser"
 app_domain: "your-domain.com"
 app_subdomain: "my-app"
 letsencrypt_email: "your-email-for-letsencrypt@yourdomain.com"
+# Should match `resource_prefix` in Terraform with `-keyvault` suffix
 key_vault_name: "my-keyvault"
 postgres_user: "adminuser"
 n8n_host: "your.n8n.host.com"

@@ -1,9 +1,9 @@
-# hetzner-terraform
+# azure-terraform
 Azure cloud automation
 
-## Prerequizites
+## Prerequisites
 
-The later described for Ubuntu system.
+The following steps assume an Ubuntu system.
 
 * terraform
 * az cli
@@ -61,6 +61,9 @@ az login --use-device-code
 ```
 terraform apply -var-file="main.tfvars"
 ```
+
+The `main.tfvars` file contains variables like `resource_prefix` and
+`location` to customize resource names and deployment region.
 
 ### Install ansible
 

@@ -1,6 +1,6 @@
 
 resource "azurerm_virtual_machine" "longlegs" {
-  name                  = "longlegs-vm"
+  name                  = "${var.resource_prefix}-vm"
   location              = azurerm_resource_group.longlegs.location
   resource_group_name   = azurerm_resource_group.longlegs.name
   network_interface_ids = [azurerm_network_interface.longlegs.id]
@@ -9,7 +9,7 @@ resource "azurerm_virtual_machine" "longlegs" {
   tags = var.common_tags
 
   storage_os_disk {
-    name              = "longlegs-os-disk"
+    name              = "${var.resource_prefix}-os-disk"
     caching           = "ReadWrite"
     create_option     = "FromImage"
     managed_disk_type = "Standard_LRS"
@@ -23,7 +23,7 @@ resource "azurerm_virtual_machine" "longlegs" {
   }
 
   os_profile {
-    computer_name  = "longlegs-vm"
+    computer_name  = "${var.resource_prefix}-vm"
     admin_username = var.ansible_user
   }
 
