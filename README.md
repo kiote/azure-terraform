@@ -59,11 +59,12 @@ az login --use-device-code
 ### Apply Terraform
 
 ```
-terraform apply -var-file="main.tfvars"
+terraform -chdir=terraform apply -var-file="main.tfvars"
 ```
 
-The `main.tfvars` file contains variables like `resource_prefix` and
-`location` to customize resource names and deployment region.
+The `main.tfvars` file located in the `terraform` directory contains variables
+like `resource_prefix` and `location` to customize resource names and
+deployment region.
 
 ### Install ansible
 
@@ -91,7 +92,7 @@ pip install -r ~/.ansible/collections/ansible_collections/azure/azcollection/req
 ### Run Ansible playbook
 
 ```
-VM_PUBLIC_IP=$(terraform output -raw vm_public_ip)
+VM_PUBLIC_IP=$(terraform -chdir=terraform output -raw vm_public_ip)
 
 ansible-playbook -i "${VM_PUBLIC_IP}," -u adminuser --private-key=~/.ssh/id_ed25519 ansible/playbook.yml
 ```
@@ -119,7 +120,7 @@ OBJECT_ID - your user object id from Entra ID (former AD). Entra ID -> Manage ->
 ### Secret already exists, need to import to terraform
 
 ```
-terraform import azurerm_key_vault_secret.<secret-name> https://<vault>.vault.azure.net/secrets/<secret-name>/<version>
+terraform -chdir=terraform import azurerm_key_vault_secret.<secret-name> https://<vault>.vault.azure.net/secrets/<secret-name>/<version>
 ```
 
 ### Debug with sidecar
