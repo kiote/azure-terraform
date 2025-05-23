@@ -6,8 +6,8 @@ Azure cloud automation
 
 This repository contains a [Dev Container](https://containers.dev/) configuration.
 Open the project in GitHub Codespaces or in VS Code with the Dev Containers extension
-and choose **Reopen in Container**. Terraform, Azure CLI and Ansible will be
-available automatically.
+and choose **Reopen in Container**. The dev container installs Terraform and Ansible via the included `Dockerfile` and adds Azure CLI using a Dev Container feature.
+All tools are available automatically.
 
 ### Getting started
 
