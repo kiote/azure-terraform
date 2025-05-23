@@ -20,6 +20,20 @@ RUN pip install --no-cache-dir ansible
 RUN pip install --no-cache-dir ansible-lint
 RUN ansible --version
 
+# Install Terraform
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    gnupg \
+    software-properties-common \
+    wget \
+    lsb-release && \
+    wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor > /usr/share/keyrings/hashicorp-archive-keyring.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" > /etc/apt/sources.list.d/hashicorp.list && \
+    apt-get update && \
+    apt-get install -y terraform && \
+    rm -rf /var/lib/apt/lists/*
+RUN terraform --version
+
 # Copy any required files from the host to the container (e.g., playbooks, inventory)
 # Uncomment the line below and customize the source/destination if needed
 # COPY ./playbooks /workspace/playbooks

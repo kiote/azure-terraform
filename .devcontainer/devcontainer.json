@@ -1,9 +1,9 @@
 {
     "name": "Azure Terraform Dev Container",
-    "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
     "features": {
-        "ghcr.io/devcontainers/features/terraform:1": {},
-        "ghcr.io/devcontainers/features/ansible:1": {},
         "ghcr.io/devcontainers/features/azure-cli:1": {}
     },
     "postCreateCommand": "terraform --version && ansible --version && az version"
