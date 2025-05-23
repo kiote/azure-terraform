@@ -6,6 +6,18 @@ variable "common_tags" {
   }
 }
 
+variable "location" {
+  description = "Azure region for all resources"
+  type        = string
+  default     = "North Europe"
+}
+
+variable "resource_prefix" {
+  description = "Prefix used for naming Azure resources"
+  type        = string
+  default     = "longlegs"
+}
+
 variable "path_to_license_file" {
   description = "Path to the license file"
   type        = string

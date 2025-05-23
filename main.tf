@@ -1,12 +1,12 @@
 resource "azurerm_resource_group" "longlegs" {
-  name     = "longlegs-resources"
-  location = "North Europe"
+  name     = "${var.resource_prefix}-resources"
+  location = var.location
 
   tags = var.common_tags
 }
 
 resource "azurerm_virtual_network" "longlegs" {
-  name                = "longlegs-network"
+  name                = "${var.resource_prefix}-network"
   address_space       = ["10.0.0.0/16"]
   location            = azurerm_resource_group.longlegs.location
   resource_group_name = azurerm_resource_group.longlegs.name
@@ -15,14 +15,14 @@ resource "azurerm_virtual_network" "longlegs" {
 }
 
 resource "azurerm_subnet" "longlegs" {
-  name                 = "longlegs-subnet"
+  name                 = "${var.resource_prefix}-subnet"
   resource_group_name  = azurerm_resource_group.longlegs.name
   virtual_network_name = azurerm_virtual_network.longlegs.name
   address_prefixes     = ["10.0.2.0/24"]
 }
 
 resource "azurerm_network_interface" "longlegs" {
-  name                = "longlegs-nic"
+  name                = "${var.resource_prefix}-nic"
   location            = azurerm_resource_group.longlegs.location
   resource_group_name = azurerm_resource_group.longlegs.name
 
@@ -37,7 +37,7 @@ resource "azurerm_network_interface" "longlegs" {
 }
 
 resource "azurerm_public_ip" "longlegs" {
-  name                    = "longlegs-pip"
+  name                    = "${var.resource_prefix}-pip"
   location                = azurerm_resource_group.longlegs.location
   resource_group_name     = azurerm_resource_group.longlegs.name
   allocation_method       = "Dynamic"
@@ -47,7 +47,7 @@ resource "azurerm_public_ip" "longlegs" {
 }
 
 resource "azurerm_network_security_group" "longlegs" {
-  name                = "longlegs-nsg"
+  name                = "${var.resource_prefix}-nsg"
   location            = azurerm_resource_group.longlegs.location
   resource_group_name = azurerm_resource_group.longlegs.name
 
