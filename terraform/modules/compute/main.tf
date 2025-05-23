@@ -1,9 +1,25 @@
+resource "azurerm_user_assigned_identity" "n8n_identity" {
+  name                = "n8n-managed-identity"
+  resource_group_name = var.resource_group_name
+  location            = var.location
+}
 
-resource "azurerm_virtual_machine" "longlegs" {
+data "azurerm_role_definition" "kv_secrets_user" {
+  name  = "Key Vault Secrets User"
+  scope = var.key_vault_id
+}
+
+resource "azurerm_role_assignment" "keyvault_role" {
+  scope              = var.key_vault_id
+  role_definition_id = data.azurerm_role_definition.kv_secrets_user.id
+  principal_id       = azurerm_user_assigned_identity.n8n_identity.principal_id
+}
+
+resource "azurerm_virtual_machine" "this" {
   name                  = "${var.resource_prefix}-vm"
-  location              = azurerm_resource_group.longlegs.location
-  resource_group_name   = azurerm_resource_group.longlegs.name
-  network_interface_ids = [azurerm_network_interface.longlegs.id]
+  location              = var.location
+  resource_group_name   = var.resource_group_name
+  network_interface_ids = [var.network_interface_id]
   vm_size               = "Standard_B2s"
 
   tags = var.common_tags
@@ -41,16 +57,6 @@ resource "azurerm_virtual_machine" "longlegs" {
   }
 }
 
-# Create user assigned managed identity
-resource "azurerm_user_assigned_identity" "n8n_identity" {
-  name                = "n8n-managed-identity"
-  resource_group_name = azurerm_resource_group.longlegs.name
-  location            = azurerm_resource_group.longlegs.location
-}
-
-// Assign Key Vault Secrets User role to the managed identity
-resource "azurerm_role_assignment" "keyvault_role" {
-  scope              = azurerm_key_vault.longlegs.id
-  role_definition_id = data.azurerm_role_definition.kv_secrets_user.id
-  principal_id       = azurerm_user_assigned_identity.n8n_identity.principal_id
+output "identity_client_id" {
+  value = azurerm_user_assigned_identity.n8n_identity.client_id
 }
