@@ -1,81 +1,20 @@
 # azure-terraform
 Azure cloud automation
 
-## Prerequisites
 
-The following steps assume an Ubuntu system.
+## Development environment
 
-* terraform
-* az cli
-* Azure subscription
-* ansible-playbook
-* `~/.ssh/id_ed25519.pub` and `~/.ssh/id_ed25519`
+This repository contains a [Dev Container](https://containers.dev/) configuration.
+Open the project in GitHub Codespaces or in VS Code with the Dev Containers extension
+and choose **Reopen in Container**. Terraform, Azure CLI and Ansible will be
+available automatically.
 
-All commands listed below you are expected to run on your local machine.
+### Getting started
 
-### Install Terraform
-
-```
-sudo apt-get update && sudo apt-get install -y gnupg software-properties-common
-wget -O- https://apt.releases.hashicorp.com/gpg | \
-gpg --dearmor | \
-sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg > /dev/null
-gpg --no-default-keyring \
---keyring /usr/share/keyrings/hashicorp-archive-keyring.gpg \
---fingerprint
-echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] \
-https://apt.releases.hashicorp.com $(lsb_release -cs) main" | \
-sudo tee /etc/apt/sources.list.d/hashicorp.list
-sudo apt update
-sudo apt-get install terraform
-terraform -help
-```
-
-In case of problems, check the latest installation procedures [here](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
-
-### Install Azure CLI
-
-```
-curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-```
-
-In case of problems, check the latest installation procedures [here](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-linux)
-
-### Login to Azure
-
-Simple login
-
-```
-az loing
-```
-
-if that didn't work, you might need 
-
-```
-az login --use-device-code
-```
-
-
-### Apply Terraform
-
-```
-terraform -chdir=terraform apply -var-file="main.tfvars"
-```
-
-The `main.tfvars` file located in the `terraform` directory contains variables
-like `resource_prefix` and `location` to customize resource names and
-deployment region.
-
-### Install ansible
-
-```
-python3 -m venv ~/ansible-venv
-source ~/ansible-venv/bin/activate
-pip install ansible
-```
-
-In case of problems, check the latest installation procedures [here](https://docs.ansible.com/ansible/latest/installation_guide/installation_distros.html#installing-ansible-on-ubuntu)
-
+1. Open the repository in VS Code.
+2. Reopen in Container when prompted.
+3. Use the integrated terminal to run Terraform and Ansible commands.
+## Usage
 ### Add your values to vars.yml
 
 1. Move vars.yml.example to vars.yml
