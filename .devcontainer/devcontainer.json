@@ -1,22 +1,10 @@
 {
-    "name": "Azure Terraform Devcontainer",
-    "build": {
-      "dockerfile": "Dockerfile"
+    "name": "Azure Terraform Dev Container",
+    "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+    "features": {
+        "ghcr.io/devcontainers/features/terraform:1": {},
+        "ghcr.io/devcontainers/features/ansible:1": {},
+        "ghcr.io/devcontainers/features/azure-cli:1": {}
     },
-    "workspaceFolder": "/workspace",
-    "customizations": {
-      "vscode": {
-        "extensions": [
-          "ms-azuretools.vscode-docker",
-          "redhat.ansible",
-          "editorconfig.editorconfig"
-        ]
-      }
-    },
-    "postCreateCommand": "ansible --version",
-    "remoteUser": "root",
-    "mounts": [
-      "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached"
-    ]
-  }
-  
+    "postCreateCommand": "terraform --version && ansible --version && az version"
+}
